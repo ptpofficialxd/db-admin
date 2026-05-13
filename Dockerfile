@@ -1,2 +1,3 @@
-FROM dbeaver/cloudbeaver:latest
-EXPOSE 8978
+FROM adminer
+
+EXPOSE 8080
