@@ -1427,35 +1427,43 @@ body #menu h1 img {
 .theme-toggle svg { display: block; }
 
 /* ============================================================
-   Modern hamburger (Adminer's #menu-toggle, only visible on mobile)
+   Modern hamburger (our own button — Adminer's native toggle is hidden)
+   Only visible on mobile (≤ 800px), styled to float top-left of the viewport.
    ============================================================ */
-#menu-toggle.menu-trigger {
+.custom-menu-trigger {
     position: fixed;
     top: 14px;
     left: 14px;
-    width: 40px;
-    height: 40px;
+    width: 42px;
+    height: 42px;
     padding: 0;
-    border: 1px solid rgba(255, 255, 255, 0.10);
+    border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 12px;
-    background: rgba(15, 17, 21, 0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(15, 17, 21, 0.88);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
     color: #F4F4F5;
     cursor: pointer;
-    display: none;       /* desktop hidden — toggled on in the mobile @media */
+    display: none;                                 /* shown on mobile only */
     align-items: center;
     justify-content: center;
     z-index: 400;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.30);
-    transition: transform 0.2s, background 0.2s, border-color 0.2s;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.35);
+    transition: transform 0.2s, background 0.2s, border-color 0.2s, color 0.2s;
 }
-#menu-toggle.menu-trigger:hover {
+.custom-menu-trigger:hover {
     transform: scale(1.05);
     border-color: rgba(34, 197, 94, 0.45);
+    color: #22C55E;
 }
-#menu-toggle.menu-trigger:active { transform: scale(0.95); }
-#menu-toggle.menu-trigger svg { display: block; }
+.custom-menu-trigger:active { transform: scale(0.95); }
+.custom-menu-trigger svg { display: block; }
+
+html.menu-open .custom-menu-trigger {
+    /* tuck behind the open sidebar so the close-X is the obvious target */
+    opacity: 0;
+    pointer-events: none;
+}
 
 /* ============================================================
    Close button inside sidebar (mobile only — hidden via @media)
@@ -1779,10 +1787,8 @@ pre,
    Mobile sidebar slide animation + visibility of mobile-only UI
    ============================================================ */
 @media all and (max-width: 800px) {
-    /* Show the redesigned hamburger and close-X */
-    #menu-toggle.menu-trigger {
-        display: inline-flex;
-    }
+    /* Show the redesigned hamburger and close-X on mobile only */
+    .custom-menu-trigger,
     .sidebar-close {
         display: inline-flex;
     }
@@ -1815,63 +1821,82 @@ pre,
 
 /* ============================================================
    Light theme — opt-in via <html data-theme="light">
-   Persisted by adminer-customizations.js in localStorage.
+   Persisted by adminer-customizations.js. All rules are scoped under
+   html[data-theme="light"] so dark mode is unaffected.
    ============================================================ */
-:root[data-theme="light"] {
-    --color-background: #FAFAFA;
-    --color-background-shade: #F4F4F5;
-    --color-highlight: rgba(0, 0, 0, 0.035);
-    --color-highlight-2: rgba(0, 0, 0, 0.07);
-    --color-border: rgba(0, 0, 0, 0.10);
-    --color-text: #18181B;
-    --color-text-muted: rgba(24, 24, 27, 0.55);
-    --color-text-highlight: #16A34A;
-    --color-text-highlight-alternative: #16A34A;
-    --color-link: #52525B;
-    --color-link-hover: #16A34A;
-    --color-table-head: #FFFFFF;
-    --color-table-head-text: #16A34A;
-    --color-table-row-odd: rgba(0, 0, 0, 0.028);
-    --color-table-row-hover: rgba(34, 197, 94, 0.08);
-    --color-table-row-checked: rgba(34, 197, 94, 0.14);
-    --color-input-background: #FFFFFF;
-    --color-input-focus-background: #F9FAFB;
-    --color-input-border: rgba(0, 0, 0, 0.12);
+html[data-theme="light"] {
+    background: #F9FAFB !important;
 }
-
-html[data-theme="light"] { background: #FAFAFA; }
 html[data-theme="light"] body {
     background:
         radial-gradient(circle at top right, rgba(34, 197, 94, 0.06), transparent 32rem),
         radial-gradient(circle at bottom left, rgba(150, 84, 255, 0.04), transparent 34rem),
-        var(--color-background);
-    color: var(--color-text);
+        #F9FAFB !important;
+    color: #18181B !important;
 }
+
 html[data-theme="light"] #menu {
     background: #FFFFFF !important;
-    border-right: 1px solid rgba(0, 0, 0, 0.08);
+    border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
-html[data-theme="light"] #menu h1 a .brand-name { color: #18181B; }
-html[data-theme="light"] #content { color: var(--color-text); }
+
+/* Brand wordmark */
+html[data-theme="light"] #menu h1 a .brand-name { color: #18181B !important; }
+html[data-theme="light"] #menu h1 a .brand-db   { color: #16A34A !important; }
+html[data-theme="light"] #menu h1 .version      { color: #16A34A !important; }
+
+/* Sidebar links, breadcrumb, headings */
+html[data-theme="light"] #menu p.links a,
+html[data-theme="light"] #menu p.links a:visited {
+    color: #52525B !important;
+}
+html[data-theme="light"] #menu p.links a:hover,
+html[data-theme="light"] #menu p.links a.active {
+    color: #16A34A !important;
+}
+html[data-theme="light"] #tables a:not(.select),
+html[data-theme="light"] #tables a:not(.select):visited {
+    color: #27272A !important;
+}
+html[data-theme="light"] #tables a:not(.select):hover,
+html[data-theme="light"] #tables a:not(.select).active {
+    color: #16A34A !important;
+}
+html[data-theme="light"] #tables a.select,
+html[data-theme="light"] #tables a.select:visited {
+    color: #71717A !important;
+}
+html[data-theme="light"] #breadcrumb,
+html[data-theme="light"] #breadcrumb a,
+html[data-theme="light"] #breadcrumb a:visited {
+    color: #52525B !important;
+}
+html[data-theme="light"] #breadcrumb a:hover { color: #16A34A !important; }
+
 html[data-theme="light"] h1,
 html[data-theme="light"] h2,
 html[data-theme="light"] h3,
-html[data-theme="light"] th {
-    color: #18181B;
+html[data-theme="light"] h4 {
+    color: #18181B !important;
 }
+html[data-theme="light"] h3 { color: #16A34A !important; }
+
+/* Tables */
+html[data-theme="light"] table { background: transparent !important; }
 html[data-theme="light"] thead td,
 html[data-theme="light"] thead th {
-    background: #F9FAFB !important;
+    background: #FFFFFF !important;
     color: #16A34A !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.10) !important;
 }
 html[data-theme="light"] tbody td,
 html[data-theme="light"] tbody th {
     color: #18181B !important;
-    border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
 }
 html[data-theme="light"] tbody tr:nth-child(odd) td,
 html[data-theme="light"] tbody tr:nth-child(odd) th {
-    background: rgba(0, 0, 0, 0.032) !important;
+    background: rgba(0, 0, 0, 0.030) !important;
 }
 html[data-theme="light"] tbody tr:nth-child(even) td,
 html[data-theme="light"] tbody tr:nth-child(even) th {
@@ -1879,15 +1904,41 @@ html[data-theme="light"] tbody tr:nth-child(even) th {
 }
 html[data-theme="light"] tbody tr:hover td,
 html[data-theme="light"] tbody tr:hover th {
-    background: rgba(34, 197, 94, 0.08) !important;
+    background: rgba(34, 197, 94, 0.10) !important;
 }
-html[data-theme="light"] input:not([type="submit"]):not([type="button"]),
+html[data-theme="light"] tbody th,
+html[data-theme="light"] tbody th a,
+html[data-theme="light"] tbody th a:visited {
+    color: #16A34A !important;
+}
+html[data-theme="light"] table.checkable,
+html[data-theme="light"] p.links + table,
+html[data-theme="light"] pre + table {
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 18px 50px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Form fields */
+html[data-theme="light"] input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]),
 html[data-theme="light"] textarea,
 html[data-theme="light"] select {
     background: #FFFFFF !important;
     color: #18181B !important;
     border: 1px solid rgba(0, 0, 0, 0.12) !important;
 }
+html[data-theme="light"] input:focus,
+html[data-theme="light"] textarea:focus,
+html[data-theme="light"] select:focus {
+    background: #FFFFFF !important;
+    border-color: rgba(22, 163, 74, 0.55) !important;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.12) !important;
+}
+html[data-theme="light"] option {
+    background-color: #FFFFFF !important;
+    color: #18181B !important;
+}
+
+/* Code / pre / SQL highlight */
 html[data-theme="light"] pre,
 html[data-theme="light"] .sqlarea.jush,
 html[data-theme="light"] .jush {
@@ -1895,19 +1946,69 @@ html[data-theme="light"] .jush {
     color: #18181B !important;
     border: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
+html[data-theme="light"] .jush-sql_code,
+html[data-theme="light"] .jush-php_code { color: #18181B !important; }
+html[data-theme="light"] .jush-kwd { color: #7C3AED !important; }   /* keywords */
+html[data-theme="light"] .jush-num { color: #16A34A !important; }
+html[data-theme="light"] .jush-quo { color: #DC2626 !important; }   /* strings */
+
+/* Buttons keep theme green — already styled via gradients, but the
+   LOGOUT pill and lang/theme buttons get light-tone glass surfaces. */
+html[data-theme="light"] body .logout input[type="submit"] {
+    background: rgba(22, 163, 74, 0.10) !important;
+    border: 1px solid rgba(22, 163, 74, 0.30) !important;
+    color: #16A34A !important;
+}
+html[data-theme="light"] body .logout input[type="submit"]:hover {
+    background: rgba(22, 163, 74, 0.20) !important;
+    color: #FFFFFF !important;
+    border-color: rgba(22, 163, 74, 0.55) !important;
+}
+
 html[data-theme="light"] .theme-toggle,
 html[data-theme="light"] .sidebar-close,
-html[data-theme="light"] #lang-toggle,
-html[data-theme="light"] .menu-header-actions .lang-toggle .lang-btn {
-    color: rgba(24, 24, 27, 0.65);
-    border-color: rgba(0, 0, 0, 0.10);
-    background: rgba(0, 0, 0, 0.03);
+html[data-theme="light"] .custom-menu-trigger {
+    background: rgba(0, 0, 0, 0.04) !important;
+    border: 1px solid rgba(0, 0, 0, 0.10) !important;
+    color: #52525B !important;
 }
-html[data-theme="light"] #menu h1 a .brand-name { color: #18181B; }
-html[data-theme="light"] .lang-toggle .lang-sep { color: rgba(0, 0, 0, 0.30); }
-html[data-theme="light"] body .logout input[type="submit"] {
+html[data-theme="light"] .custom-menu-trigger {
+    background: rgba(255, 255, 255, 0.92) !important;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12) !important;
+}
+html[data-theme="light"] .theme-toggle:hover,
+html[data-theme="light"] .sidebar-close:hover {
     background: rgba(22, 163, 74, 0.10) !important;
     border-color: rgba(22, 163, 74, 0.35) !important;
     color: #16A34A !important;
 }
 
+html[data-theme="light"] .lang-toggle .lang-btn {
+    color: rgba(24, 24, 27, 0.55) !important;
+}
+html[data-theme="light"] .lang-toggle .lang-btn:hover {
+    color: #16A34A !important;
+    background: rgba(22, 163, 74, 0.08) !important;
+}
+html[data-theme="light"] .lang-toggle .lang-btn.active {
+    color: #16A34A !important;
+    background: rgba(22, 163, 74, 0.14) !important;
+}
+html[data-theme="light"] .lang-toggle .lang-sep { color: rgba(0, 0, 0, 0.30) !important; }
+
+/* defaultdb selector + LOGOUT pill backgrounds in the sidebar */
+html[data-theme="light"] #menu #dbs select {
+    background: #FFFFFF !important;
+    color: #18181B !important;
+    border-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Backdrop is lighter in light mode */
+html[data-theme="light"] .sidebar-backdrop {
+    background: rgba(24, 24, 27, 0.30) !important;
+}
+
+/* Green dot marker color in light theme */
+html[data-theme="light"] #tables a:not(.select)::before {
+    background: #16A34A !important;
+}
