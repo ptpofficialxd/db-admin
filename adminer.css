@@ -2202,3 +2202,114 @@ html[data-theme="light"] .footer + div input[name="target"] {
 }
 
 
+/* ============================================================
+   Light-theme: edit-fields / alter-table form panel.
+   The dark-mode block hardcodes `#09090B !important` on the
+   container and `#0F1115 !important` on the thead. In light mode
+   that produced the all-black panel seen on the Alter Table page.
+   ============================================================ */
+html[data-theme="light"] table.checkable,
+html[data-theme="light"] p.links + table,
+html[data-theme="light"] pre + table,
+html[data-theme="light"] #edit-fields,
+html[data-theme="light"] p + table,
+html[data-theme="light"] h3 + table,
+html[data-theme="light"] .scrollable table {
+    background: #FFFFFF !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+}
+
+html[data-theme="light"] thead td,
+html[data-theme="light"] thead th {
+    background: #F9FAFB !important;
+    color: #16A34A !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Body cells inside the edit-fields grid */
+html[data-theme="light"] #edit-fields td,
+html[data-theme="light"] #edit-fields th {
+    background: transparent !important;
+    color: #18181B !important;
+    border-color: rgba(0, 0, 0, 0.06) !important;
+}
+
+/* Inputs inside the alter-table form (text/select/radio container rows) */
+html[data-theme="light"] #edit-fields input[type="text"],
+html[data-theme="light"] #edit-fields input[type="number"],
+html[data-theme="light"] #edit-fields input:not([type]),
+html[data-theme="light"] #edit-fields select,
+html[data-theme="light"] #edit-fields textarea {
+    background: #FFFFFF !important;
+    color: #18181B !important;
+    border: 1px solid rgba(0, 0, 0, 0.14) !important;
+}
+html[data-theme="light"] #edit-fields input[type="text"]:focus,
+html[data-theme="light"] #edit-fields input[type="number"]:focus,
+html[data-theme="light"] #edit-fields input:not([type]):focus,
+html[data-theme="light"] #edit-fields select:focus,
+html[data-theme="light"] #edit-fields textarea:focus {
+    border-color: #16A34A !important;
+    box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.15) !important;
+    outline: 0 !important;
+}
+
+
+/* ============================================================
+   Light-theme: restore a minimal circular frame around the
+   floating theme toggle. Previous pass stripped the frame
+   entirely; this version keeps the modern look but gives the
+   moon icon a clearly defined hit-area + subtle outline.
+   ============================================================ */
+html[data-theme="light"] .theme-toggle {
+    background: #FFFFFF !important;
+    border: 1px solid rgba(0, 0, 0, 0.10) !important;
+    border-radius: 50% !important;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10) !important;
+    color: #18181B !important;
+}
+html[data-theme="light"] .theme-toggle:hover {
+    background: #FFFFFF !important;
+    border-color: rgba(22, 163, 74, 0.55) !important;
+    color: #16A34A !important;
+    box-shadow: 0 8px 22px rgba(22, 163, 74, 0.18) !important;
+}
+
+
+/* ============================================================
+   Light-theme: disabled footer action buttons
+   (ANALYZE / OPTIMIZE / CHECK / REPAIR / TRUNCATE / DROP /
+   MOVE / COPY). The dark-mode rule uses
+   `--color-button-disabled-text: rgba(255,255,255,0.2)` which is
+   invisible on the white page. Re-tone them for light bg.
+   ============================================================ */
+html[data-theme="light"] input[type="submit"][disabled],
+html[data-theme="light"] input[type="button"][disabled],
+html[data-theme="light"] input[type="submit"][disabled]:hover,
+html[data-theme="light"] input[type="button"][disabled]:hover {
+    background: rgba(0, 0, 0, 0.04) !important;
+    color: rgba(24, 24, 27, 0.78) !important;
+    border: 1px solid rgba(0, 0, 0, 0.14) !important;
+    text-shadow: none !important;
+    font-weight: 600;
+}
+
+/* Enabled footer/action buttons — keep the brand-green look readable on white */
+html[data-theme="light"] .footer input[type="submit"]:not([disabled]),
+html[data-theme="light"] .footer + div input[type="submit"]:not([disabled]),
+html[data-theme="light"] .footer input[type="button"]:not([disabled]),
+html[data-theme="light"] .footer + div input[type="button"]:not([disabled]) {
+    background: #16A34A !important;
+    color: #FFFFFF !important;
+    border: 1px solid #16A34A !important;
+}
+html[data-theme="light"] .footer input[type="submit"]:not([disabled]):hover,
+html[data-theme="light"] .footer + div input[type="submit"]:not([disabled]):hover,
+html[data-theme="light"] .footer input[type="button"]:not([disabled]):hover,
+html[data-theme="light"] .footer + div input[type="button"]:not([disabled]):hover {
+    background: #15803D !important;
+    border-color: #15803D !important;
+}
+
+
