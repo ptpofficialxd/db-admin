@@ -913,10 +913,11 @@ form p label {
     color: var(--color-schema-type-binary);
 }
 
-/* Higher specificity (body #lang = 101) + !important so it always wins,
-   regardless of any earlier base/cascade rule or browser cache. */
+/* Desktop: use `position: absolute` so the picker sits at the top of the page
+   and scrolls away when the user scrolls down (instead of blocking table cells
+   on the right). Mobile overrides this to `fixed` further down in the file. */
 body #lang {
-    position: fixed !important;
+    position: absolute !important;
     top: 14px !important;
     right: 200px !important;        /* leaves room for "doadmin" + LOGOUT */
     left: auto !important;
@@ -930,9 +931,10 @@ body #lang {
 
 body #lang select {
     font-size: 12px !important;
-    padding: 6px 26px 6px 12px !important;
+    padding: 6px 12px !important;       /* symmetric — width hugs the selected language */
     border: 1px solid rgba(255, 255, 255, 0.10) !important;
     background: rgba(255, 255, 255, 0.04) !important;
+    background-image: none !important;   /* kill the inherited dropdown-arrow PNG */
     border-radius: 10px !important;
     -webkit-appearance: none !important;
     -moz-appearance: none !important;
@@ -940,9 +942,9 @@ body #lang select {
     cursor: pointer;
     outline: 0;
     width: auto !important;
-    min-width: 110px;
-    text-align: left !important;
-    text-align-last: left !important;
+    min-width: 0 !important;
+    text-align: center !important;
+    text-align-last: center !important;
     color: #E4E4E7 !important;
     transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
@@ -1549,8 +1551,10 @@ pre,
   }
 
   /* Move the language picker so it doesn't collide with anything on mobile.
-     Must use `body #lang` to match the desktop rule's specificity (101). */
+     Must use `body #lang` to match the desktop rule's specificity (101).
+     On mobile keep it pinned to the viewport (`fixed`) so it stays reachable. */
   body #lang {
+    position: fixed !important;
     top: 12px !important;
     right: 12px !important;
     left: auto !important;
@@ -1558,7 +1562,7 @@ pre,
 
   body #lang select {
     min-width: 0 !important;
-    padding: 6px 22px 6px 10px !important;
+    padding: 6px 12px !important;     /* symmetric on mobile too */
   }
 
   /* Stop the fixed logout button from covering the bottom of content */
