@@ -7,6 +7,7 @@
 //   3. Brand rebrand + tab title
 //   4. Brand-link rewrite → DB list
 //   5. Theme toggle (light/dark)
+//   6. Login form label overrides (i18n patches)
 (function () {
     'use strict';
 
@@ -136,6 +137,51 @@
         return btn;
     }
 
+    /* ===== 6. Login form label overrides ======================= */
+    // Replace Adminer's built-in i18n strings on the login page.
+    // Runs only when the auth driver hidden input is present.
+    var LOGIN_TEXT_REPLACEMENTS = [
+        ['Permanent login', 'Remember me'],
+        ['จดจำการเข้าสู่ระบบตลอดไป', 'จดจำการเข้าสู่ระบบ'],
+        ['เซอเวอร์', 'เซิฟเวอร์'],
+    ];
+
+    function patchLoginLabels() {
+        if (!document.querySelector('input[name="auth[driver]"]')) return;
+
+        // Mark the body so CSS can target the login layout.
+        document.body.setAttribute('data-login', 'true');
+
+        var root = document.querySelector('form') || document.body;
+        var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+        var node;
+        while ((node = walker.nextNode())) {
+            var t = node.nodeValue;
+            if (!t) continue;
+            var changed = t;
+            for (var i = 0; i < LOGIN_TEXT_REPLACEMENTS.length; i++) {
+                var pair = LOGIN_TEXT_REPLACEMENTS[i];
+                if (changed.indexOf(pair[0]) !== -1) {
+                    changed = changed.split(pair[0]).join(pair[1]);
+                }
+            }
+            if (changed !== t) node.nodeValue = changed;
+        }
+
+        // Also patch submit buttons that carry text via value=.
+        var inputs = document.querySelectorAll('input[type="submit"], input[type="button"]');
+        inputs.forEach(function (el) {
+            var v = el.getAttribute('value');
+            if (!v) return;
+            LOGIN_TEXT_REPLACEMENTS.forEach(function (pair) {
+                if (v.indexOf(pair[0]) !== -1) {
+                    v = v.split(pair[0]).join(pair[1]);
+                }
+            });
+            if (v !== el.getAttribute('value')) el.setAttribute('value', v);
+        });
+    }
+
     /* ===== Init ================================================ */
     function init() {
         var menu = document.getElementById('menu');
@@ -155,6 +201,7 @@
         rebrandHeader();
         rebrandTitle();
         rewriteBrandLink();
+        patchLoginLabels();
     }
 
     if (document.readyState === 'loading') {
