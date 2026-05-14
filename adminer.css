@@ -1668,39 +1668,42 @@ pre,
 
 /*
 ===============================================
-=   Final Premium Branding Fix 2026           =
-=   Full text + green db + tighter language    =
+=   Final Compact Branding Fix 2026           =
+=   Single text, no db overflow                =
 ===============================================
 */
 
-/* Brand area */
+/*
+  ใช้ pseudo-element ตัวเดียวเพื่อให้คำว่า
+  ptpofficialxd-db อยู่ติดกันเสมอ ไม่แยก db หลุดออกนอก sidebar
+*/
+
 #menu h1 {
   position: relative !important;
-  min-height: 78px !important;
+  min-height: 76px !important;
   box-sizing: border-box !important;
 
   display: flex !important;
   align-items: center !important;
 
-  padding: 16px 12px 14px 86px !important;
+  padding: 15px 10px 13px 82px !important;
   margin: 0 0 10px 0 !important;
 
-  overflow: visible !important;
+  overflow: hidden !important;
 
-  background-size: 66px auto !important;
+  background-size: 62px auto !important;
   background-repeat: no-repeat !important;
-  background-position: 14px center !important;
+  background-position: 13px center !important;
 }
 
-/* Hide original Adminer text */
 #menu h1 a {
   position: relative !important;
   display: block !important;
 
-  width: 212px !important;
-  max-width: 212px !important;
-  height: 34px !important;
-  line-height: 34px !important;
+  width: 205px !important;
+  max-width: 205px !important;
+  height: 32px !important;
+  line-height: 32px !important;
 
   overflow: visible !important;
   font-size: 0 !important;
@@ -1708,14 +1711,13 @@ pre,
   text-decoration: none !important;
 }
 
-/* Hide original version */
 #menu h1 .version {
   display: none !important;
 }
 
-/* White part */
+/* Brand: white ptpofficialxd- + green db */
 #menu h1 a::after {
-  content: "ptpofficialxd-";
+  content: "ptpofficialxd-db";
 
   position: absolute !important;
   left: 0 !important;
@@ -1723,68 +1725,62 @@ pre,
   transform: translateY(-50%) !important;
 
   display: block !important;
+  width: 205px !important;
+  max-width: 205px !important;
   white-space: nowrap !important;
 
   font-family: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
-  font-size: 22px !important;
-  font-weight: 850 !important;
+  font-size: 20px !important;
+  font-weight: 880 !important;
   line-height: 1 !important;
-  letter-spacing: -1px !important;
+  letter-spacing: -0.9px !important;
 
-  color: #F4F4F5 !important;
+  color: transparent !important;
 
-  text-shadow:
-    0 0 10px rgba(255,255,255,0.10),
-    0 0 22px rgba(255,255,255,0.045),
-    0 10px 30px rgba(0,0,0,0.34);
+  background: linear-gradient(
+    90deg,
+    #F4F4F5 0%,
+    #F4F4F5 86%,
+    #22C55E 86%,
+    #22C55E 100%
+  ) !important;
+
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+
+  filter:
+    drop-shadow(0 0 10px rgba(255,255,255,0.10))
+    drop-shadow(0 0 18px rgba(34,197,94,0.18))
+    drop-shadow(0 10px 28px rgba(0,0,0,0.32));
 }
 
-/* Green db part */
+/* Disable old green db pseudo if browser keeps it */
 #menu h1 a::before {
-  content: "db";
-
-  position: absolute !important;
-  left: 183px !important;
-  top: 50% !important;
-  transform: translateY(-50%) !important;
-
-  display: block !important;
-  white-space: nowrap !important;
-
-  font-family: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
-  font-size: 22px !important;
-  font-weight: 900 !important;
-  line-height: 1 !important;
-  letter-spacing: -1px !important;
-
-  color: #22C55E !important;
-
-  text-shadow:
-    0 0 10px rgba(34,197,94,0.60),
-    0 0 24px rgba(34,197,94,0.32),
-    0 0 42px rgba(34,197,94,0.16);
+  content: none !important;
+  display: none !important;
 }
 
-/* Premium hover */
 #menu h1:hover a::after {
-  color: #FFFFFF !important;
-  text-shadow:
-    0 0 12px rgba(255,255,255,0.16),
-    0 0 26px rgba(255,255,255,0.07);
+  background: linear-gradient(
+    90deg,
+    #FFFFFF 0%,
+    #FFFFFF 86%,
+    #4ADE80 86%,
+    #4ADE80 100%
+  ) !important;
+
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+
+  filter:
+    drop-shadow(0 0 12px rgba(255,255,255,0.14))
+    drop-shadow(0 0 26px rgba(74,222,128,0.26));
 }
 
-#menu h1:hover a::before {
-  color: #4ADE80 !important;
-  text-shadow:
-    0 0 12px rgba(74,222,128,0.72),
-    0 0 30px rgba(74,222,128,0.42),
-    0 0 54px rgba(74,222,128,0.22);
-}
-
-/* Tighter, cleaner language selector */
+/* Tighter language selector */
 #lang {
-  top: 112px !important;
-  left: 146px !important;
+  top: 106px !important;
+  left: 142px !important;
   right: auto !important;
   width: 118px !important;
   margin: 0 !important;
@@ -1817,68 +1813,60 @@ pre,
   color: #22C55E !important;
 }
 
-/* Bring database selector closer after brand */
 #menu #dbs {
-  margin-top: 6px !important;
+  margin-top: 8px !important;
 }
 
 /* Narrow desktop */
 @media all and (max-width: 1200px) {
   #menu h1 {
-    padding-left: 82px !important;
-    background-size: 64px auto !important;
-    background-position: 13px center !important;
+    padding-left: 78px !important;
+    background-size: 60px auto !important;
+    background-position: 12px center !important;
   }
 
-  #menu h1 a {
-    width: 205px !important;
-    max-width: 205px !important;
+  #menu h1 a,
+  #menu h1 a::after {
+    width: 198px !important;
+    max-width: 198px !important;
   }
 
-  #menu h1 a::after,
-  #menu h1 a::before {
-    font-size: 21px !important;
-  }
-
-  #menu h1 a::before {
-    left: 174px !important;
+  #menu h1 a::after {
+    font-size: 19px !important;
+    letter-spacing: -0.85px !important;
   }
 
   #lang {
-    left: 140px !important;
-    top: 108px !important;
+    left: 136px !important;
+    top: 104px !important;
   }
 }
 
 /* Mobile */
 @media all and (max-width: 800px) {
   #menu h1 {
-    min-height: 74px !important;
-    padding: 14px 12px 12px 82px !important;
+    min-height: 72px !important;
+    padding: 14px 12px 12px 78px !important;
     margin-bottom: 8px !important;
-    background-size: 62px auto !important;
-    background-position: 14px center !important;
+    background-size: 58px auto !important;
+    background-position: 13px center !important;
   }
 
-  #menu h1 a {
-    width: 202px !important;
-    max-width: 202px !important;
-    height: 32px !important;
+  #menu h1 a,
+  #menu h1 a::after {
+    width: 196px !important;
+    max-width: 196px !important;
+    height: 30px !important;
   }
 
-  #menu h1 a::after,
-  #menu h1 a::before {
-    font-size: 20px !important;
-    letter-spacing: -0.9px !important;
-  }
-
-  #menu h1 a::before {
-    left: 166px !important;
+  #menu h1 a::after {
+    font-size: 19px !important;
+    letter-spacing: -0.82px !important;
   }
 
   #lang {
     position: absolute !important;
-    top: 98px !important;
+    top: 94px !important;
     right: 24px !important;
     left: auto !important;
     width: 112px !important;
@@ -1896,29 +1884,25 @@ pre,
 /* Small phones */
 @media all and (max-width: 420px) {
   #menu h1 {
-    min-height: 72px !important;
-    padding-left: 78px !important;
-    background-size: 60px auto !important;
-    background-position: 12px center !important;
+    min-height: 70px !important;
+    padding-left: 74px !important;
+    background-size: 56px auto !important;
+    background-position: 11px center !important;
   }
 
-  #menu h1 a {
-    width: 196px !important;
-    max-width: 196px !important;
+  #menu h1 a,
+  #menu h1 a::after {
+    width: 188px !important;
+    max-width: 188px !important;
   }
 
-  #menu h1 a::after,
-  #menu h1 a::before {
-    font-size: 19px !important;
-    letter-spacing: -0.82px !important;
-  }
-
-  #menu h1 a::before {
-    left: 158px !important;
+  #menu h1 a::after {
+    font-size: 18px !important;
+    letter-spacing: -0.78px !important;
   }
 
   #lang {
-    top: 94px !important;
+    top: 90px !important;
     right: 18px !important;
     width: 108px !important;
   }
