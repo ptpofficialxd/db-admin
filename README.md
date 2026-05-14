@@ -36,8 +36,6 @@ A heavily customized [Adminer](https://www.adminer.org/) deployment built for pr
 
 ### Screenshots
 
-> Drop your screenshots into `docs/` and reference them here.
-
 | Dark mode | Light mode |
 | --- | --- |
 | ![dark](./docs/dark.png) | ![light](./docs/light.png) |
@@ -139,8 +137,6 @@ MIT — see [LICENSE](./LICENSE).
 - **Docker layer เหมาะกับ cache** — เรียง CSS → scripts → PHP ทำให้แก้แค่ style แล้ว build ใหม่จะ hit cache สูงสุด
 
 ### ภาพหน้าจอ
-
-> วางรูปลงโฟลเดอร์ `docs/` แล้วจะ render ขึ้นในตารางด้านล่าง
 
 | Dark mode | Light mode |
 | --- | --- |
