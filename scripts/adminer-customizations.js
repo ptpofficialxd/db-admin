@@ -7,7 +7,6 @@
 //   3. Brand rebrand + tab title
 //   4. Brand-link rewrite → DB list
 //   5. Theme toggle (light/dark)
-//   6. Mobile sidebar UX (own hamburger + slide + close X + backdrop)
 (function () {
     'use strict';
 
@@ -137,83 +136,6 @@
         return btn;
     }
 
-    /* ===== 6. Mobile sidebar UX ================================ */
-    var HAMBURGER_SVG = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>';
-    var CLOSE_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M6 18L18 6"/></svg>';
-
-    function setupSidebarUI(menu) {
-        // 1) Hide every variant of Adminer's native mobile trigger.
-        //    5.x uses #menuopen > button.icon.icon-move; older builds used
-        //    #menu-toggle / #menutoggle / .menutoggle.
-        ['menu-toggle', 'menutoggle', 'menuopen'].forEach(function (id) {
-            var n = document.getElementById(id);
-            if (n) {
-                n.style.display = 'none';
-                n.setAttribute('aria-hidden', 'true');
-            }
-        });
-        Array.prototype.forEach.call(
-            document.querySelectorAll(
-                '.menu-toggle, .menutoggle, #menuopen button.icon.icon-move'
-            ),
-            function (n) { n.style.display = 'none'; }
-        );
-
-        // 2) Create OUR own hamburger trigger (always controllable).
-        if (!document.querySelector('.custom-menu-trigger')) {
-            var trigger = document.createElement('button');
-            trigger.type = 'button';
-            trigger.className = 'custom-menu-trigger';
-            trigger.setAttribute('aria-label', 'Open sidebar');
-            trigger.innerHTML = HAMBURGER_SVG;
-            trigger.addEventListener('click', function (e) {
-                e.preventDefault();
-                document.documentElement.classList.toggle('menu-open');
-            });
-            document.body.appendChild(trigger);
-        }
-
-        // 3) Close × inside sidebar
-        if (!menu.querySelector('.sidebar-close')) {
-            var close = document.createElement('button');
-            close.type = 'button';
-            close.className = 'sidebar-close';
-            close.setAttribute('aria-label', 'Close sidebar');
-            close.innerHTML = CLOSE_SVG;
-            close.addEventListener('click', function () {
-                document.documentElement.classList.remove('menu-open');
-            });
-            menu.appendChild(close);
-        }
-
-        // 4) Backdrop
-        if (!document.querySelector('.sidebar-backdrop')) {
-            var bd = document.createElement('div');
-            bd.className = 'sidebar-backdrop';
-            bd.addEventListener('click', function () {
-                document.documentElement.classList.remove('menu-open');
-            });
-            document.body.appendChild(bd);
-        }
-
-        // 5) Auto-close after tapping a nav link (mobile UX)
-        menu.addEventListener('click', function (e) {
-            var t = e.target;
-            var a = t && t.closest && t.closest('a');
-            if (!a) return;
-            if (a.classList.contains('lang-btn')) return;
-            if (a.classList.contains('theme-toggle')) return;
-            document.documentElement.classList.remove('menu-open');
-        });
-
-        // 6) ESC closes
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') {
-                document.documentElement.classList.remove('menu-open');
-            }
-        });
-    }
-
     /* ===== Init ================================================ */
     function init() {
         var menu = document.getElementById('menu');
@@ -228,9 +150,7 @@
         document.body.appendChild(buildThemeToggle());
 
         if (menu) {
-            relocateLogout(menu);
-            setupSidebarUI(menu);
-        }
+            relocateLogout(menu);}
 
         rebrandHeader();
         rebrandTitle();
