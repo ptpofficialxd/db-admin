@@ -913,54 +913,53 @@ form p label {
     color: var(--color-schema-type-binary);
 }
 
-/* Pinned to top-right of the *viewport* (fixed) so when the user scrolls a
-   wide table horizontally, the picker stays glued to the right edge and
-   remains reachable. Vertical scroll is handled by the scroll-driven
-   animation below — the element fades up off-screen so it doesn't block
-   table data when scrolling down. */
+/* The native Adminer language dropdown is hidden — JS replaces it with a
+   compact "EN / TH" toggle injected into #menu (see .lang-toggle below).
+   The original <select> stays in DOM so the JS can read its current value. */
 body #lang {
-    position: fixed !important;
-    top: 14px !important;
-    right: 200px !important;        /* leaves room for "doadmin" + LOGOUT */
-    left: auto !important;
-    bottom: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    z-index: 100 !important;
-    line-height: normal !important;
-    font-size: 0 !important;
+    display: none !important;
 }
 
-body #lang select {
-    font-size: 12px !important;
-    padding: 6px 12px !important;       /* symmetric — width hugs the selected language */
-    border: 1px solid rgba(255, 255, 255, 0.10) !important;
-    background: rgba(255, 255, 255, 0.04) !important;
-    background-image: none !important;   /* kill the inherited dropdown-arrow PNG */
-    border-radius: 10px !important;
-    -webkit-appearance: none !important;
-    -moz-appearance: none !important;
-    appearance: none !important;
-    cursor: pointer;
-    outline: 0;
-    width: auto !important;
-    min-width: 0 !important;
-    text-align: center !important;
-    text-align-last: center !important;
-    color: #E4E4E7 !important;
-    transition: background 0.2s, color 0.2s, border-color 0.2s;
+/* JS-injected EN/TH toggle — lives inside #menu (sidebar) at the top-right
+   corner, above/near the adminer version text. Works identically on desktop
+   and mobile because #menu is the same containing block on both. */
+#menu .lang-toggle {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    z-index: 5;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
-body #lang select:hover,
-body #lang select:focus {
-    background: rgba(34, 197, 94, 0.10) !important;
-    color: #FFFFFF !important;
-    border-color: rgba(34, 197, 94, 0.45) !important;
+#menu .lang-toggle .lang-btn {
+    color: rgba(244, 244, 245, 0.45);
+    text-decoration: none !important;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: color 0.18s ease, background 0.18s ease;
 }
 
-body.rtl #lang {
-    right: auto !important;
-    left: 200px !important;
+#menu .lang-toggle .lang-btn:hover {
+    color: #22C55E;
+    background: rgba(34, 197, 94, 0.08);
+}
+
+#menu .lang-toggle .lang-btn.active {
+    color: #22C55E;
+    background: rgba(34, 197, 94, 0.12);
+    cursor: default;
+}
+
+#menu .lang-toggle .lang-sep {
+    color: rgba(244, 244, 245, 0.25);
+    font-weight: 400;
 }
 
 .message {
@@ -1269,7 +1268,7 @@ body {
 
 /* UNIVERSAL — LOGOUT lives on the sidebar at every viewport size (mobile,
    tablet, desktop). Anchored from the LEFT relative to the sidebar's width
-   so the pill always lands next to defaultdb, never out in the content area. */
+   so the pill always sits next to defaultdb, never out in the content area. */
 body .logout,
 body p.logout {
     position: fixed !important;
@@ -1417,12 +1416,12 @@ tbody tr:nth-child(odd) td,
 .odds tbody tr:nth-child(2n) td,
 .odd th,
 .odd td {
-    background: rgba(255, 255, 255, 0.045) !important;  /* odd: subtle gray-on-dark */
+    background: rgba(255, 255, 255, 0.045) !important;  /* odd row */
 }
 
 tbody tr:nth-child(even) th,
 tbody tr:nth-child(even) td {
-    background: rgba(255, 255, 255, 0.012) !important;  /* even: just a hair darker */
+    background: rgba(255, 255, 255, 0.012) !important;  /* even row */
 }
 
 /* Clean row separators */
@@ -1581,12 +1580,6 @@ pre,
     }
 }
 
-
-/*
-===============================================
-=      Mobile Logout & Lang Pin 2026          =
-===============================================
-*/
 
 @media all and (max-width: 800px) {
     /* LOGOUT pill / h1 clamp / #dbs padding are now UNIVERSAL further up
