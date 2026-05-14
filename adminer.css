@@ -762,14 +762,34 @@ input[type="radio"] {
     border-radius: var(--ui-radio-radius);
 }
 
+/* `:checked` must win over `:focus` so the green fill + tick paint on the
+   first click. Without these explicit combos the focus border-color rule
+   above gets evaluated last by some engines and the checkmark only appears
+   after the input loses focus. */
 input[type="checkbox"]:checked,
-input[type="radio"]:checked {
-    background-color: var(--color-input-checked);
-    border-color: var(--color-input-checked);
+input[type="radio"]:checked,
+input[type="checkbox"]:checked:focus,
+input[type="radio"]:checked:focus,
+input[type="checkbox"]:checked:focus-visible,
+input[type="radio"]:checked:focus-visible,
+input[type="checkbox"]:checked:hover,
+input[type="radio"]:checked:hover,
+input[type="checkbox"]:checked:active,
+input[type="radio"]:checked:active {
+    background-color: var(--color-input-checked) !important;
+    border-color: var(--color-input-checked) !important;
 }
 
 input[type="checkbox"]:checked::before,
-input[type="radio"]:checked::before {
+input[type="radio"]:checked::before,
+input[type="checkbox"]:checked:focus::before,
+input[type="radio"]:checked:focus::before,
+input[type="checkbox"]:checked:focus-visible::before,
+input[type="radio"]:checked:focus-visible::before,
+input[type="checkbox"]:checked:hover::before,
+input[type="radio"]:checked:hover::before,
+input[type="checkbox"]:checked:active::before,
+input[type="radio"]:checked:active::before {
     content: "✔";
     position: absolute;
     left: 0;
@@ -779,8 +799,9 @@ input[type="radio"]:checked::before {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: var(--color-input-checked-text);
+    color: var(--color-input-checked-text) !important;
     font-size: 13px;
+    font-weight: 700;
 }
 
 .icon,
@@ -1865,18 +1886,44 @@ html[data-theme="light"] body .logout input[type="submit"]:hover {
     border-color: rgba(22, 163, 74, 0.55) !important;
 }
 
-html[data-theme="light"] .theme-toggle,
-html[data-theme="light"] .theme-toggle:hover,
+/* ------------------------------------------------------------
+   Light-theme: text-only/minimal look for floating toggles.
+   No frames, no borders, no glass surfaces — just strong-contrast
+   ink that flips to brand green on hover/active.
+   ------------------------------------------------------------ */
+html[data-theme="light"] .theme-toggle {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    color: #18181B !important;
+}
+html[data-theme="light"] .theme-toggle:hover {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    color: #16A34A !important;
+    transform: rotate(18deg) scale(1.05);
+}
+
+html[data-theme="light"] #menu .lang-toggle .lang-btn,
 html[data-theme="light"] .lang-toggle .lang-btn {
+    background: transparent !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    padding: 6px 8px !important;
     color: rgba(24, 24, 27, 0.55) !important;
 }
+html[data-theme="light"] #menu .lang-toggle .lang-btn:hover,
 html[data-theme="light"] .lang-toggle .lang-btn:hover {
+    background: transparent !important;
     color: #16A34A !important;
-    background: rgba(22, 163, 74, 0.08) !important;
 }
+html[data-theme="light"] #menu .lang-toggle .lang-btn.active,
 html[data-theme="light"] .lang-toggle .lang-btn.active {
+    background: transparent !important;
     color: #16A34A !important;
-    background: rgba(22, 163, 74, 0.14) !important;
 }
 html[data-theme="light"] .lang-toggle .lang-sep { color: rgba(0, 0, 0, 0.30) !important; }
 
@@ -2048,12 +2095,27 @@ html[data-theme="light"] input[type="radio"]:focus {
     box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.18) !important;
 }
 html[data-theme="light"] input[type="checkbox"]:checked,
-html[data-theme="light"] input[type="radio"]:checked {
+html[data-theme="light"] input[type="radio"]:checked,
+html[data-theme="light"] input[type="checkbox"]:checked:focus,
+html[data-theme="light"] input[type="radio"]:checked:focus,
+html[data-theme="light"] input[type="checkbox"]:checked:focus-visible,
+html[data-theme="light"] input[type="radio"]:checked:focus-visible,
+html[data-theme="light"] input[type="checkbox"]:checked:hover,
+html[data-theme="light"] input[type="radio"]:checked:hover,
+html[data-theme="light"] input[type="checkbox"]:checked:active,
+html[data-theme="light"] input[type="radio"]:checked:active {
     background-color: #16A34A !important;
     border-color: #16A34A !important;
+    box-shadow: none !important;
 }
 html[data-theme="light"] input[type="checkbox"]:checked::before,
-html[data-theme="light"] input[type="radio"]:checked::before {
+html[data-theme="light"] input[type="radio"]:checked::before,
+html[data-theme="light"] input[type="checkbox"]:checked:focus::before,
+html[data-theme="light"] input[type="radio"]:checked:focus::before,
+html[data-theme="light"] input[type="checkbox"]:checked:hover::before,
+html[data-theme="light"] input[type="radio"]:checked:hover::before,
+html[data-theme="light"] input[type="checkbox"]:checked:active::before,
+html[data-theme="light"] input[type="radio"]:checked:active::before {
     color: #FFFFFF !important;
 }
 
