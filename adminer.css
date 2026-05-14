@@ -1272,19 +1272,35 @@ body {
 body .logout,
 body p.logout {
     position: fixed !important;
-    top: 86px !important;                                          /* aligns with #dbs row */
-    left: calc(var(--ui-sidebar-width) - 100px - 16px) !important;
+    /* #menu has padding: 25px → h1 starts at y=25, ends y=95, margin-bottom 16
+       → #dbs starts at y=111. Same calc for left: sidebar 310 - menu-pad 25
+       - button 100 = 185. */
+    top: 111px !important;
+    left: calc(var(--ui-sidebar-width) - 25px - 100px) !important;
     right: auto !important;
     bottom: auto !important;
     margin: 0 !important;
     padding: 0 !important;
     width: 100px !important;
     max-width: 100px !important;
+    height: 44px !important;
     background: transparent !important;
     border: none !important;
     box-shadow: none !important;
     text-align: center !important;
     z-index: 300 !important;
+    box-sizing: border-box !important;
+}
+
+/* Force the defaultdb selector to the EXACT same height (44px, border-box)
+   so the LOGOUT pill next to it lines up perfectly — no half-pixel drift
+   from padding/border/font-size differences. */
+body #menu #dbs select {
+    height: 44px !important;
+    box-sizing: border-box !important;
+    line-height: 1 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
 }
 
 body .logout > a,
@@ -1300,6 +1316,7 @@ body .logout input,
 body .logout input[type="submit"] {
     width: 100% !important;
     height: 44px !important;
+    line-height: 1 !important;
     margin: 0 !important;
     padding: 0 8px !important;
     border-radius: 10px !important;
