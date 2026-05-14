@@ -386,19 +386,17 @@ p code + a:visited:hover {
 }
 
 /* Adminer version label — relocated by JS into .menu-header-actions
-   (next to the EN/TH toggle). Plain muted text, no pill, no glow.
-   The :not() guard below removes any stray styling when it's still
-   inside the h1 before JS runs. */
+   (next to the EN/TH toggle). Green pill chip, no glow / shadow. */
 #menu h1 .version,
 #menu .menu-header-actions .version {
-    color: rgba(244, 244, 245, 0.40);
+    color: #22C55E;
     font-size: 11px;
-    font-weight: 500;
-    letter-spacing: 0.02em;
-    background: transparent;
-    border: 0;
-    padding: 0;
-    margin: 0;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    background: rgba(34, 197, 94, 0.10);
+    border: 1px solid rgba(34, 197, 94, 0.30);
+    border-radius: 999px;
+    padding: 2px 8px;
     line-height: 1;
     display: inline-block;
     vertical-align: middle;
@@ -1857,9 +1855,9 @@ html[data-theme="light"] #menu h1 a .brand-db {
 }
 html[data-theme="light"] #menu h1 .version,
 html[data-theme="light"] #menu .menu-header-actions .version {
-    color: rgba(24, 24, 27, 0.50) !important;
-    background: transparent !important;
-    border: 0 !important;
+    color: #16A34A !important;
+    background: rgba(22, 163, 74, 0.10) !important;
+    border: 1px solid rgba(22, 163, 74, 0.35) !important;
 }
 
 /* Sidebar links, breadcrumb, headings */
@@ -2018,8 +2016,9 @@ html[data-theme="light"] .lang-toggle .lang-btn:hover {
 }
 html[data-theme="light"] #menu .lang-toggle .lang-btn.active,
 html[data-theme="light"] .lang-toggle .lang-btn.active {
-    background: transparent !important;
+    background: rgba(22, 163, 74, 0.14) !important;
     color: #16A34A !important;
+    border-radius: 8px !important;
 }
 html[data-theme="light"] .lang-toggle .lang-sep { color: rgba(0, 0, 0, 0.30) !important; }
 
@@ -2568,21 +2567,35 @@ html[data-theme="light"] .footer + div input[type="button"]:not([disabled]):hove
     outline: 0 !important;
 }
 
-/* Login submit button — premium gradient pill */
+/* Stack the action row vertically: Remember-me sits ABOVE the
+   Login button, between the Database field and the submit. Native
+   Adminer HTML puts <input type=submit> first and <label> second
+   inside the same <p>, so column-reverse flips their visual order
+   without touching the DOM. */
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) > p:has(input[type="submit"]) {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 14px;
+    margin-top: 14px;
+}
+
+/* Login submit button — gradient pill, sized down for a premium feel */
 :is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) input[type="submit"] {
     display: inline-block;
-    margin-top: 18px !important;
-    padding: 12px 34px !important;
+    align-self: flex-start;
+    margin: 0 !important;
+    padding: 9px 22px !important;
     background: linear-gradient(180deg, #22C55E 0%, #16A34A 100%) !important;
     color: #FFFFFF !important;
     border: 0 !important;
-    border-radius: 12px !important;
+    border-radius: 10px !important;
     font-weight: 700 !important;
-    font-size: 13px !important;
-    letter-spacing: 0.10em !important;
+    font-size: 12px !important;
+    letter-spacing: 0.08em !important;
     text-transform: uppercase !important;
     box-shadow:
-        0 8px 24px rgba(34, 197, 94, 0.35),
+        0 6px 18px rgba(34, 197, 94, 0.30),
         0 0 0 1px rgba(255, 255, 255, 0.10) inset !important;
     cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease !important;
@@ -2590,7 +2603,7 @@ html[data-theme="light"] .footer + div input[type="button"]:not([disabled]):hove
 :is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) input[type="submit"]:hover {
     transform: translateY(-1px);
     box-shadow:
-        0 12px 32px rgba(34, 197, 94, 0.50),
+        0 9px 24px rgba(34, 197, 94, 0.42),
         0 0 0 1px rgba(255, 255, 255, 0.12) inset !important;
     filter: brightness(1.05);
 }
@@ -2598,12 +2611,13 @@ html[data-theme="light"] .footer + div input[type="button"]:not([disabled]):hove
     transform: translateY(0);
 }
 
-/* "Remember me" checkbox row */
+/* "Remember me" checkbox row — no left margin, sits directly under
+   the Database field thanks to the column-reverse flex above. */
 :is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) label {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    margin-left: 14px;
+    margin: 0 !important;
     color: rgba(244, 244, 245, 0.75);
     font-size: 13px;
     cursor: pointer;
@@ -2673,11 +2687,14 @@ html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[
     }
     :is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) input[type="submit"] {
         width: 100%;
-        padding: 14px 24px !important;
+        align-self: stretch;
+        padding: 12px 24px !important;
+        font-size: 13px !important;
     }
+    /* Keep the stacked order on mobile too — checkbox above button */
     :is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) label {
         display: flex;
-        margin: 14px 0 0;
+        margin: 0 !important;
     }
 }
 

@@ -141,9 +141,10 @@
     // Replace Adminer's built-in i18n strings on the login page.
     // Runs only when the auth driver hidden input is present.
     var LOGIN_TEXT_REPLACEMENTS = [
+        ['System', 'System / Host'],
         ['Permanent login', 'Remember me'],
         ['จดจำการเข้าสู่ระบบตลอดไป', 'จดจำการเข้าสู่ระบบ'],
-        ['เซอเวอร์', 'เซิฟเวอร์'],
+        ['เซอเวอร์', 'เซิฟเวอร์ / โฮสต์'],
     ];
 
     function isLoginPage() {
