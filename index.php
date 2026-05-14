@@ -2,31 +2,37 @@
 /**
  * Adminer entry-point.
  *
- * Mirrors the upstream docker-adminer index.php — auto-loads any plugin file
- * dropped into ./plugins-enabled/ so we can extend Adminer without touching
- * this file again.
+ * Returns an anonymous Adminer subclass that overrides head() to inject
+ * our EN/TH language toggle JS with the per-request CSP nonce.
+ *
+ * No plugin.php / AdminerPlugin needed — the official adminer:5.4.2
+ * standalone image doesn't ship plugins/plugin.php, so we avoid the whole
+ * plugin loader and just subclass Adminer directly.
  */
 function adminer_object()
 {
-    $pluginsEnabled = __DIR__ . '/plugins-enabled';
-    if (!is_dir($pluginsEnabled)) {
-        return new Adminer;
-    }
+    return new class extends Adminer {
+        public function head($dark = null)
+        {
+            $result = parent::head($dark);
 
-    $plugins = [];
-    foreach (glob($pluginsEnabled . '/*.php') ?: [] as $plugin) {
-        $instance = require $plugin;
-        if (is_object($instance)) {
-            $plugins[] = $instance;
+            $jsFile = __DIR__ . '/scripts/adminer-lang-toggle.js';
+            if (is_file($jsFile)) {
+                $nonceAttr = '';
+                if (function_exists('get_nonce')) {
+                    $n = get_nonce();
+                    if ($n !== null && $n !== '') {
+                        $nonceAttr = ' nonce="' . htmlspecialchars($n, ENT_QUOTES) . '"';
+                    }
+                }
+                echo "<script{$nonceAttr}>\n";
+                echo file_get_contents($jsFile);
+                echo "\n</script>\n";
+            }
+
+            return $result;
         }
-    }
-
-    if (!$plugins) {
-        return new Adminer;
-    }
-
-    require_once __DIR__ . '/plugins/plugin.php';
-    return new AdminerPlugin($plugins);
+    };
 }
 
 require __DIR__ . '/adminer.php';
