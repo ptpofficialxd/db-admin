@@ -57,6 +57,43 @@ if (isset($_COOKIE['adminer_sid'])) {
     ]);
 }
 
+// ============================================================
+// Logout: wipe the security-sensitive Adminer cookies.
+//
+// Adminer's built-in logout handler only clears `adminer_permanent`,
+// leaving `adminer_sid` and `adminer_key` in the browser. We
+// register a shutdown callback so cookie-deletion headers are
+// emitted on the logout response (after Adminer's redirect()/exit()
+// has already run, but before PHP flushes headers to the client).
+//
+// Only auth-bearing cookies are cleared:
+//   • adminer_sid       — session ID (dead server-side but cookie
+//                          still presents itself to the server)
+//   • adminer_permanent — long-lived "Remember me" auth cookie
+//   • adminer_key       — encryption key that protects adminer_permanent
+// `adminer_settings` (UI prefs) and `adminer_version` (version cache)
+// are NOT cleared — they carry no credentials and removing them just
+// loses the user's vendor/lang selection on the next visit.
+// ============================================================
+$isLogoutRequest = isset($_POST['logout']) || isset($_GET['logout']);
+if ($isLogoutRequest) {
+    register_shutdown_function(static function () use ($isHttps) {
+        $authCookies = ['adminer_sid', 'adminer_permanent', 'adminer_key'];
+        foreach ($authCookies as $name) {
+            if (!isset($_COOKIE[$name])) {
+                continue;
+            }
+            setcookie($name, '', [
+                'expires'  => time() - 86400,
+                'path'     => '/',
+                'secure'   => $isHttps,
+                'httponly' => true,
+                'samesite' => 'Lax',
+            ]);
+        }
+    });
+}
+
 function adminer_object()
 {
     return new class extends \Adminer\Adminer {
