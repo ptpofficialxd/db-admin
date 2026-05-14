@@ -1173,11 +1173,108 @@ div.footer  {
     box-shadow: none;
     bottom: auto;
 }
-@media all and (max-width:800px) {
-  #menu {
-    box-shadow: none;
-    border-color: var(--color-border);
-  }
+@media all and (max-width: 800px) {
+    #menu {
+        box-shadow: none;
+        border-color: var(--color-border);
+    }
+
+    /* ----- Sidebar header layout: keep h1 a fixed height so positions below
+       it are deterministic on iOS Safari (which otherwise blows up the logo) */
+    body #menu h1 {
+        height: 70px !important;
+        max-height: 70px !important;
+        line-height: 50px !important;
+        padding: 10px 0 10px 75px !important;
+        margin: 0 0 16px 0 !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
+    }
+    body #menu h1 a,
+    body #menu h1 img {
+        max-height: 50px !important;
+        width: auto !important;
+        vertical-align: middle !important;
+    }
+
+    /* ----- LOGOUT pill — slot it next to the defaultdb selector INSIDE the
+       sidebar. Anchored from the LEFT relative to sidebar width so the pill
+       always lands inside the 310px column, not at the viewport's right edge. */
+    body .logout,
+    body p.logout {
+        position: fixed !important;
+        top: 86px !important;                                            /* aligns with #dbs row */
+        left: calc(var(--ui-sidebar-width) - 100px - 16px) !important;   /* 16px gutter from sidebar's right edge */
+        right: auto !important;
+        bottom: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100px !important;
+        max-width: 100px !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        text-align: center !important;
+        z-index: 300 !important;                                         /* above #menu (200) so the sidebar bg can't cover it */
+    }
+
+    /* Hide the bare username link Adminer emits inside .logout — the button
+       itself is enough on phones. */
+    body .logout > a,
+    body .logout > span,
+    body .logout > b,
+    body p.logout > a,
+    body p.logout > span,
+    body p.logout > b {
+        display: none !important;
+    }
+
+    /* The submit button itself — pill, matches the green theme. */
+    body .logout input,
+    body .logout input[type="submit"] {
+        width: 100% !important;
+        height: 44px !important;                                         /* matches #dbs select height */
+        margin: 0 !important;
+        padding: 0 8px !important;
+        border-radius: 10px !important;
+        background: rgba(34, 197, 94, 0.10) !important;
+        border: 1px solid rgba(34, 197, 94, 0.30) !important;
+        color: #22C55E !important;
+        font-size: 12px !important;
+        font-weight: 600 !important;
+        letter-spacing: 0.04em;
+        line-height: normal !important;
+        text-align: center !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        box-sizing: border-box !important;
+    }
+
+    body .logout input[type="submit"]:hover,
+    body .logout input[type="submit"]:active {
+        background: rgba(34, 197, 94, 0.18) !important;
+        color: #FFFFFF !important;
+        border-color: rgba(34, 197, 94, 0.55) !important;
+    }
+
+    /* Carve out room on the right side of #dbs for the LOGOUT pill */
+    body #menu #dbs {
+        padding-right: 116px !important;                                 /* 100px button + 16px gap */
+        box-sizing: border-box !important;
+    }
+
+    /* The scroll-driven hide animation that's nice on desktop is wrong for
+       mobile — LOGOUT and the EN/TH toggle must always stay visible. */
+    body #lang,
+    body .logout,
+    body p.logout,
+    #menu .lang-toggle {
+        animation: none !important;
+        transform: none !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
 }
 
 
@@ -1283,171 +1380,4 @@ body p.logout {
     text-align: right;
 }
 
-/* Scroll-driven animation: hide the header trio (#lang + username + LOGOUT)
-   when the page is scrolled vertically past ~120px. Horizontal scroll does
-   NOT advance the timeline, so the elements remain visible while panning
-   the table sideways — exactly what we want.
-   Falls back to "always visible" on browsers that don't support
-   scroll-driven animations (Safari < 18, Firefox < 134). */
-@supports (animation-timeline: scroll()) {
-    body #lang,
-    body .logout,
-    body p.logout {
-        animation: header-hide-on-vertical-scroll linear both;
-        animation-timeline: scroll(root block);
-        animation-range: 80px 160px;
-    }
-
-    @keyframes header-hide-on-vertical-scroll {
-        from {
-            opacity: 1;
-            transform: translateY(0);
-            visibility: visible;
-        }
-        to {
-            opacity: 0;
-            transform: translateY(-110%);
-            visibility: hidden;
-        }
-    }
-}
-
-#menu h1,
-#breadcrumb,
-#content p.links a.active,
-table.checkable,
-p.links + table,
-pre + table,
-#edit-fields,
-p + table,
-h3 + table,
-.scrollable table {
-    border-radius: 16px;
-}
-
-#content p.links a.active {
-    background: rgba(255, 255, 255, 0.06);
-    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
-}
-
-h2 {
-    color: #FAFAFA;
-    font-weight: 300;
-    letter-spacing: -0.04em;
-}
-
-h3 {
-    color: var(--color-text-highlight);
-    letter-spacing: 0.16em;
-}
-
-/* Premium cards/tables */
-table {
-    background: transparent !important;
-    border-collapse: separate;
-    border-spacing: 0;
-}
-
-table.checkable,
-p.links + table,
-pre + table,
-#edit-fields,
-p + table,
-h3 + table,
-.scrollable table {
-    overflow: hidden;
-    background: #09090B !important;
-    border: 1px solid var(--color-border) !important;
-    box-shadow: var(--shadow-table);
-}
-
-thead td,
-thead th {
-    background: #0F1115 !important;
-    color: var(--color-table-head-text) !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-    font-weight: 600;
-    text-transform: lowercase;
-}
-
-/* Zebra striping — subtle alternating rows for readability on dark theme */
-tbody tr,
-tbody tr th,
-tbody tr td {
-    background: transparent !important;
-}
-
-tbody tr:nth-child(odd) th,
-tbody tr:nth-child(odd) td,
-.odds tbody tr:nth-child(2n) th,
-.odds tbody tr:nth-child(2n) td,
-.odd th,
-.odd td {
-    background: rgba(255, 255, 255, 0.028) !important;
-}
-
-tbody tr:nth-child(even) th,
-tbody tr:nth-child(even) td {
-    background: transparent !important;
-}
-
-/* Clean row separators */
-tbody th,
-tbody td {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.055) !important;
-    color: #E4E4E7 !important;
-}
-
-tbody th,
-tbody th a,
-tbody th a:visited {
-    color: #22C55E !important;
-}
-
-tbody tr:hover,
-tbody tr:hover th,
-tbody tr:hover td,
-.checkable tbody tr:hover th,
-.checkable tbody tr:hover td {
-    background: #111318 !important;
-}
-
-.js .checkable .checked,
-.js .checkable .checked th,
-.js .checkable .checked td {
-    background: rgba(34, 197, 94, 0.12) !important;
-    color: #F4F4F5 !important;
-}
-
-.checkable .checked td:first-child {
-    box-shadow: inset 3px 0 0 #22C55E;
-}
-
-/* Forms */
-input:not([type]),
-input[type="color"],
-input[type="email"],
-input[type="number"],
-input[type="password"],
-input[type="tel"],
-input[type="url"],
-input[type="text"],
-input[type="search"],
-textarea,
-select {
-    background: #111318 !important;
-    color: #F4F4F5 !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 10px !important;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-    background: #171A21 !important;
-    border-color: rgba(34, 197, 94, 0.55) !important;
-    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12) !important;
-}
-
-input[type="submi
+/* Scroll-driven animation: hide the header trio (#lang + username + L
