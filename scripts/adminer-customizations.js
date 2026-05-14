@@ -142,13 +142,20 @@
     var CLOSE_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M6 18L18 6"/></svg>';
 
     function setupSidebarUI(menu) {
-        // 1) Hide Adminer's plain native toggle (any common id/class variant).
-        ['menu-toggle', 'menutoggle'].forEach(function (id) {
+        // 1) Hide every variant of Adminer's native mobile trigger.
+        //    5.x uses #menuopen > button.icon.icon-move; older builds used
+        //    #menu-toggle / #menutoggle / .menutoggle.
+        ['menu-toggle', 'menutoggle', 'menuopen'].forEach(function (id) {
             var n = document.getElementById(id);
-            if (n) n.style.display = 'none';
+            if (n) {
+                n.style.display = 'none';
+                n.setAttribute('aria-hidden', 'true');
+            }
         });
         Array.prototype.forEach.call(
-            document.querySelectorAll('.menu-toggle, .menutoggle'),
+            document.querySelectorAll(
+                '.menu-toggle, .menutoggle, #menuopen button.icon.icon-move'
+            ),
             function (n) { n.style.display = 'none'; }
         );
 
