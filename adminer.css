@@ -1364,6 +1364,18 @@ body #menu h1 img {
     vertical-align: middle !important;
 }
 
+/* ============================================================
+   Wordmark — "ptpofficialxd" (white) + "DB" (theme green).
+   Injected by adminer-customizations.js into #menu h1 a.
+   ============================================================ */
+#menu h1 a .brand-name {
+    color: #F4F4F5;
+}
+#menu h1 a .brand-db {
+    color: #22C55E;
+    margin-left: 2px;
+}
+
 #menu h1,
 #breadcrumb,
 #content p.links a.active,

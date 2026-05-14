@@ -5,11 +5,9 @@
 // in alphabetical order on each request).
 //
 // Currently does:
-//   1. EN/TH language toggle that submits Adminer's native lang form
-//      (preserves CSRF + session-based language switch).
-//   2. Relocates the LOGOUT form into #menu so adminer.css can position it
-//      via `position: absolute` relative to the sidebar — robust against
-//      mobile browsers rendering #menu wider than --ui-sidebar-width.
+//   1. EN/TH language toggle that submits Adminer's native lang form.
+//   2. Relocates the LOGOUT form into #menu for robust sidebar positioning.
+//   3. Rebrands the "Adminer" wordmark and tab title to "ptpofficialxdDB".
 //
 // Paired with adminer.css.
 (function () {
@@ -110,6 +108,54 @@
     }
 
     /* ============================================================
+       Rebrand wordmark + tab title
+       ============================================================ */
+
+    var BRAND_PREFIX = 'ptpofficialxd';   // white
+    var BRAND_SUFFIX = 'DB';               // green (theme color)
+    var BRAND_FULL = BRAND_PREFIX + BRAND_SUFFIX;
+
+    /**
+     * Replace the "adminer" text inside the sidebar <h1><a> with two
+     * differently-colored spans. The h1's background logo image and the
+     * version <span class="version"> stay untouched.
+     */
+    function rebrandHeader() {
+        var link = document.querySelector('#menu h1 a');
+        if (!link) return;
+        // Idempotent — bail out if already rebranded.
+        if (link.querySelector('.brand-name')) return;
+
+        // Wipe direct text nodes only — preserves any nested elements
+        // Adminer might emit (e.g. <span class="version">5.4.2</span>).
+        Array.prototype.slice.call(link.childNodes).forEach(function (node) {
+            if (node.nodeType === Node.TEXT_NODE) {
+                link.removeChild(node);
+            }
+        });
+
+        var name = document.createElement('span');
+        name.className = 'brand-name';
+        name.textContent = BRAND_PREFIX;
+
+        var db = document.createElement('span');
+        db.className = 'brand-db';
+        db.textContent = BRAND_SUFFIX;
+
+        link.insertBefore(db, link.firstChild);
+        link.insertBefore(name, db);
+    }
+
+    /**
+     * Adminer appends " - Adminer" to the document.title. Swap that suffix
+     * for our brand so the browser tab matches.
+     */
+    function rebrandTitle() {
+        if (!document.title) return;
+        document.title = document.title.replace(/ - Adminer\b/i, ' - ' + BRAND_FULL);
+    }
+
+    /* ============================================================
        Init
        ============================================================ */
 
@@ -121,6 +167,9 @@
         else document.body.appendChild(toggle);
 
         if (menu) relocateLogout(menu);
+
+        rebrandHeader();
+        rebrandTitle();
     }
 
     if (document.readyState === 'loading') {
