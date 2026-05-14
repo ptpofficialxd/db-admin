@@ -1563,13 +1563,32 @@ pre,
     display: block !important;
   }
 
-  /* Slot LOGOUT into the same row as the "defaultdb" selector — but anchor it
-     from the LEFT relative to the sidebar's actual width (310px) so it lands
-     INSIDE the sidebar, not out in the content area on the right. */
+  /* Lock the sidebar header to a known height so the LOGOUT pill below can be
+     aligned reliably. Adminer 5.4.2 renders <img> inside h1 which blows up on
+     iOS Safari — clamp it. */
+  body #menu h1 {
+    height: 70px !important;
+    max-height: 70px !important;
+    line-height: 50px !important;
+    padding: 10px 0 10px 75px !important;
+    margin: 0 0 16px 0 !important;
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+  }
+  body #menu h1 a,
+  body #menu h1 img {
+    max-height: 50px !important;
+    width: auto !important;
+    vertical-align: middle !important;
+  }
+
+  /* Slot LOGOUT into the same row as the "defaultdb" selector, anchored from
+     the LEFT relative to the sidebar's actual width so it lands INSIDE the
+     sidebar (not the content area on the right). z-index above #menu (200). */
   body .logout,
   body p.logout {
     position: fixed !important;
-    top: 85px !important;                                        /* matches #dbs row */
+    top: 86px !important;                                        /* h1 70px + margin 16px */
     left: calc(var(--ui-sidebar-width) - 100px - 16px) !important; /* 16px gutter from sidebar's right edge */
     right: auto !important;
     bottom: auto !important;
@@ -1581,7 +1600,7 @@ pre,
     border: none !important;
     box-shadow: none !important;
     text-align: center !important;
-    z-index: 100 !important;
+    z-index: 300 !important;       /* above #menu (200) — sidebar bg would otherwise hide it */
   }
 
   /* Hide username link/text — only the submit stays inline next to #dbs. */
