@@ -141,14 +141,61 @@
     var HAMBURGER_SVG = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>';
     var CLOSE_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M6 18L18 6"/></svg>';
 
+    /**
+     * Force-open the sidebar via inline style.setProperty(..., 'important').
+     * This beats ANY stylesheet including Adminer's bundled mobile CSS that
+     * might still want to keep #menu hidden.
+     * @param {HTMLElement} menu
+     */
+    function forceOpen(menu) {
+        document.documentElement.classList.add('menu-open');
+        document.body.classList.add('menu-open');
+        if (!menu) return;
+        var s = menu.style;
+        s.setProperty('display', 'flex', 'important');
+        s.setProperty('flex-direction', 'column', 'important');
+        s.setProperty('visibility', 'visible', 'important');
+        s.setProperty('opacity', '1', 'important');
+        s.setProperty('position', 'fixed', 'important');
+        s.setProperty('left', '0', 'important');
+        s.setProperty('right', 'auto', 'important');
+        s.setProperty('top', '0', 'important');
+        s.setProperty('bottom', '0', 'important');
+        s.setProperty('transform', 'translateX(0)', 'important');
+        s.setProperty('width', 'var(--ui-sidebar-width, 310px)', 'important');
+        s.setProperty('max-width', '92vw', 'important');
+        s.setProperty('height', '100vh', 'important');
+        s.setProperty('z-index', '250', 'important');
+        s.setProperty('pointer-events', 'auto', 'important');
+        s.setProperty('overflow-y', 'auto', 'important');
+    }
+
+    /** @param {HTMLElement} menu */
+    function forceClose(menu) {
+        document.documentElement.classList.remove('menu-open');
+        document.body.classList.remove('menu-open');
+        if (!menu) return;
+        var s = menu.style;
+        s.setProperty('transform', 'translateX(-105%)', 'important');
+        // Keep inline display/visibility so the transition runs cleanly,
+        // then let the desktop @media rules reset on the next viewport change.
+    }
+
+    /** @param {HTMLElement} menu */
+    function toggleSidebar(menu) {
+        if (document.documentElement.classList.contains('menu-open')) {
+            forceClose(menu);
+        } else {
+            forceOpen(menu);
+        }
+    }
+
     function setupSidebarUI(menu) {
         // 1) Hide every variant of Adminer's native mobile trigger.
-        //    5.x uses #menuopen > button.icon.icon-move; older builds used
-        //    #menu-toggle / #menutoggle / .menutoggle.
         ['menu-toggle', 'menutoggle', 'menuopen'].forEach(function (id) {
             var n = document.getElementById(id);
             if (n) {
-                n.style.display = 'none';
+                n.style.setProperty('display', 'none', 'important');
                 n.setAttribute('aria-hidden', 'true');
             }
         });
@@ -156,10 +203,10 @@
             document.querySelectorAll(
                 '.menu-toggle, .menutoggle, #menuopen button.icon.icon-move'
             ),
-            function (n) { n.style.display = 'none'; }
+            function (n) { n.style.setProperty('display', 'none', 'important'); }
         );
 
-        // 2) Create OUR own hamburger trigger (always controllable).
+        // 2) Our own hamburger
         if (!document.querySelector('.custom-menu-trigger')) {
             var trigger = document.createElement('button');
             trigger.type = 'button';
@@ -168,8 +215,7 @@
             trigger.innerHTML = HAMBURGER_SVG;
             trigger.addEventListener('click', function (e) {
                 e.preventDefault();
-                document.documentElement.classList.toggle('menu-open');
-                document.body.classList.toggle('menu-open');
+                toggleSidebar(menu);
             });
             document.body.appendChild(trigger);
         }
@@ -182,8 +228,7 @@
             close.setAttribute('aria-label', 'Close sidebar');
             close.innerHTML = CLOSE_SVG;
             close.addEventListener('click', function () {
-                document.documentElement.classList.remove('menu-open');
-                document.body.classList.remove('menu-open');
+                forceClose(menu);
             });
             menu.appendChild(close);
         }
@@ -193,30 +238,43 @@
             var bd = document.createElement('div');
             bd.className = 'sidebar-backdrop';
             bd.addEventListener('click', function () {
-                document.documentElement.classList.remove('menu-open');
-                document.body.classList.remove('menu-open');
+                forceClose(menu);
             });
             document.body.appendChild(bd);
         }
 
-        // 5) Auto-close after tapping a nav link (mobile UX)
+        // 5) Auto-close after tapping a nav link
         menu.addEventListener('click', function (e) {
             var t = e.target;
             var a = t && t.closest && t.closest('a');
             if (!a) return;
             if (a.classList.contains('lang-btn')) return;
             if (a.classList.contains('theme-toggle')) return;
-            document.documentElement.classList.remove('menu-open');
-            document.body.classList.remove('menu-open');
+            forceClose(menu);
         });
 
         // 6) ESC closes
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') {
+            if (e.key === 'Escape') forceClose(menu);
+        });
+
+        // 7) On desktop, the inline styles we may have set should NOT linger.
+        //    Listen to viewport changes — if we cross the mobile breakpoint
+        //    back to desktop, wipe the inline overrides so default CSS rules.
+        var mq = window.matchMedia('(min-width: 801px)');
+        function syncDesktop() {
+            if (mq.matches) {
+                ['display','flex-direction','visibility','opacity','position',
+                 'left','right','top','bottom','transform','width','max-width',
+                 'height','z-index','pointer-events','overflow-y']
+                    .forEach(function (k) { menu.style.removeProperty(k); });
                 document.documentElement.classList.remove('menu-open');
                 document.body.classList.remove('menu-open');
             }
-        });
+        }
+        mq.addEventListener ? mq.addEventListener('change', syncDesktop)
+                            : mq.addListener(syncDesktop);
+        syncDesktop();
     }
 
     /* ===== Init ================================================ */
