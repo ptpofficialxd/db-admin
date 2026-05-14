@@ -385,19 +385,24 @@ p code + a:visited:hover {
     color: var(--color-text);
 }
 
-#menu h1 .version {
-    color: rgba(244, 244, 245, 0.45);
+/* Adminer version label — relocated by JS into .menu-header-actions
+   (next to the EN/TH toggle). Plain muted text, no pill, no glow.
+   The :not() guard below removes any stray styling when it's still
+   inside the h1 before JS runs. */
+#menu h1 .version,
+#menu .menu-header-actions .version {
+    color: rgba(244, 244, 245, 0.40);
     font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    margin-left: 6px;
-    padding: 2px 7px;
-    border-radius: 999px;
-    background: rgba(34, 197, 94, 0.10);
-    border: 1px solid rgba(34, 197, 94, 0.25);
-    vertical-align: middle;
-    line-height: 1.6;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    line-height: 1;
     display: inline-block;
+    vertical-align: middle;
+    text-transform: lowercase;
 }
 
 #menu p {
@@ -1850,10 +1855,11 @@ html[data-theme="light"] #menu h1 a .brand-db {
     filter: drop-shadow(0 0 6px rgba(22, 163, 74, 0.45))
             drop-shadow(0 0 14px rgba(22, 163, 74, 0.15)) !important;
 }
-html[data-theme="light"] #menu h1 .version {
-    color: #16A34A !important;
-    background: rgba(22, 163, 74, 0.08) !important;
-    border: 1px solid rgba(22, 163, 74, 0.30) !important;
+html[data-theme="light"] #menu h1 .version,
+html[data-theme="light"] #menu .menu-header-actions .version {
+    color: rgba(24, 24, 27, 0.50) !important;
+    background: transparent !important;
+    border: 0 !important;
 }
 
 /* Sidebar links, breadcrumb, headings */
@@ -2439,17 +2445,26 @@ html[data-theme="light"] .footer + div input[type="button"]:not([disabled]):hove
         radial-gradient(50% 40% at 10% 90%, rgba(34, 197, 94, 0.07), transparent 70%);
 }
 
-/* Push the login content above the ambient backdrop */
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) > *,
+/* Push the login content above the ambient backdrop.
+   Scoped to the specific login elements (NOT > *) so it doesn't
+   strip the position: fixed from the floating .theme-toggle. */
 :is(body[data-login="true"], body:has(input[name="auth[username]"])) #content,
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form,
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) h1 {
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) > form,
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) > h1,
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) > h2,
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) > p {
     position: relative;
     z-index: 1;
 }
 
-/* Title — gradient ink, centered above the card */
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) h1 {
+/* Title — gradient ink, centered above the card.
+   Scoped to direct-child h1/h2 of <body> so the sidebar's brand
+   h1 (#menu h1) is left alone. Adminer may render the login title
+   as either h1 or h2 depending on version. */
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) > h1,
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) > h2,
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) #content > h1,
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) #content > h2 {
     text-align: center;
     font-size: 32px;
     font-weight: 800;
@@ -2464,7 +2479,7 @@ html[data-theme="light"] .footer + div input[type="button"]:not([disabled]):hove
 }
 
 /* The form itself becomes the card */
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form {
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) {
     position: relative;
     max-width: 460px;
     margin: 0 auto 6vh;
@@ -2480,7 +2495,7 @@ html[data-theme="light"] .footer + div input[type="button"]:not([disabled]):hove
     backdrop-filter: blur(20px) saturate(160%);
     overflow: visible;
 }
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form::before {
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"])::before {
     content: "";
     position: absolute;
     inset: -30px -30px auto -30px;
@@ -2492,8 +2507,8 @@ html[data-theme="light"] .footer + div input[type="button"]:not([disabled]):hove
 }
 
 /* Inner table layout */
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form table.layout,
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form table {
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) table.layout,
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) table {
     width: 100%;
     background: transparent !important;
     border: 0 !important;
@@ -2503,13 +2518,13 @@ html[data-theme="light"] .footer + div input[type="button"]:not([disabled]):hove
 }
 
 /* Field labels — small uppercase caption, theme green */
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form table th,
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form table td {
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) table th,
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) table td {
     background: transparent !important;
     border: 0 !important;
     padding: 6px 0 !important;
 }
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form table th {
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) table th {
     color: rgba(34, 197, 94, 0.85) !important;
     font-size: 11px !important;
     font-weight: 700 !important;
@@ -2520,18 +2535,18 @@ html[data-theme="light"] .footer + div input[type="button"]:not([disabled]):hove
     width: 100%;
     display: block;
 }
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form table td {
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) table td {
     display: block;
     width: 100%;
     padding-bottom: 10px !important;
 }
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form table tr { display: block; }
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) table tr { display: block; }
 
 /* Inputs and selects inside the card */
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form input[type="text"],
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form input[type="password"],
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form input:not([type]),
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form select {
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) input[type="text"],
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) input[type="password"],
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) input:not([type]),
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) select {
     width: 100% !important;
     box-sizing: border-box !important;
     background: rgba(255, 255, 255, 0.04) !important;
@@ -2543,10 +2558,10 @@ html[data-theme="light"] .footer + div input[type="button"]:not([disabled]):hove
     box-shadow: none !important;
     transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease !important;
 }
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form input[type="text"]:focus,
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form input[type="password"]:focus,
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form input:not([type]):focus,
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form select:focus {
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) input[type="text"]:focus,
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) input[type="password"]:focus,
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) input:not([type]):focus,
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) select:focus {
     border-color: #22C55E !important;
     box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.18) !important;
     background: rgba(255, 255, 255, 0.06) !important;
@@ -2554,7 +2569,7 @@ html[data-theme="light"] .footer + div input[type="button"]:not([disabled]):hove
 }
 
 /* Login submit button — premium gradient pill */
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form input[type="submit"] {
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) input[type="submit"] {
     display: inline-block;
     margin-top: 18px !important;
     padding: 12px 34px !important;
@@ -2572,19 +2587,19 @@ html[data-theme="light"] .footer + div input[type="button"]:not([disabled]):hove
     cursor: pointer;
     transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease !important;
 }
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form input[type="submit"]:hover {
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) input[type="submit"]:hover {
     transform: translateY(-1px);
     box-shadow:
         0 12px 32px rgba(34, 197, 94, 0.50),
         0 0 0 1px rgba(255, 255, 255, 0.12) inset !important;
     filter: brightness(1.05);
 }
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form input[type="submit"]:active {
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) input[type="submit"]:active {
     transform: translateY(0);
 }
 
 /* "Remember me" checkbox row */
-:is(body[data-login="true"], body:has(input[name="auth[username]"])) form label {
+:is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) label {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -2600,14 +2615,17 @@ html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[
         radial-gradient(60% 50% at 80% 10%, rgba(22, 163, 74, 0.10), transparent 70%),
         radial-gradient(50% 40% at 10% 90%, rgba(22, 163, 74, 0.05), transparent 70%) !important;
 }
-html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) h1 {
+html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) > h1,
+html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) > h2,
+html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) #content > h1,
+html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) #content > h2 {
     background: linear-gradient(180deg, #0F1115 0%, #27272A 55%, #16A34A 130%) !important;
     -webkit-background-clip: text !important;
     background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
     filter: drop-shadow(0 0 18px rgba(22, 163, 74, 0.18)) !important;
 }
-html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form {
+html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) {
     background: rgba(255, 255, 255, 0.72) !important;
     border: 1px solid rgba(22, 163, 74, 0.20) !important;
     box-shadow:
@@ -2615,46 +2633,49 @@ html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[
         0 0 0 1px rgba(0, 0, 0, 0.03) inset,
         0 0 50px rgba(22, 163, 74, 0.10) !important;
 }
-html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form table th {
+html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) table th {
     color: #16A34A !important;
 }
-html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form input[type="text"],
-html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form input[type="password"],
-html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form input:not([type]),
-html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form select {
+html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) input[type="text"],
+html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) input[type="password"],
+html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) input:not([type]),
+html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) select {
     background: #FFFFFF !important;
     color: #18181B !important;
     border: 1px solid rgba(0, 0, 0, 0.10) !important;
 }
-html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form input[type="text"]:focus,
-html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form input[type="password"]:focus,
-html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form input:not([type]):focus,
-html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form select:focus {
+html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) input[type="text"]:focus,
+html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) input[type="password"]:focus,
+html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) input:not([type]):focus,
+html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) select:focus {
     border-color: #16A34A !important;
     box-shadow: 0 0 0 4px rgba(22, 163, 74, 0.15) !important;
     background: #FFFFFF !important;
 }
-html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form label {
+html[data-theme="light"] :is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) label {
     color: #18181B !important;
 }
 
 /* Mobile — full width card, gentler padding */
 @media (max-width: 640px) {
-    :is(body[data-login="true"], body:has(input[name="auth[username]"])) h1 {
+    :is(body[data-login="true"], body:has(input[name="auth[username]"])) > h1,
+    :is(body[data-login="true"], body:has(input[name="auth[username]"])) > h2,
+    :is(body[data-login="true"], body:has(input[name="auth[username]"])) #content > h1,
+    :is(body[data-login="true"], body:has(input[name="auth[username]"])) #content > h2 {
         font-size: 26px;
         margin: 4vh 16px 18px;
         max-width: none;
     }
-    :is(body[data-login="true"], body:has(input[name="auth[username]"])) form {
+    :is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) {
         margin: 0 16px 4vh;
         padding: 24px 20px;
         border-radius: 16px;
     }
-    :is(body[data-login="true"], body:has(input[name="auth[username]"])) form input[type="submit"] {
+    :is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) input[type="submit"] {
         width: 100%;
         padding: 14px 24px !important;
     }
-    :is(body[data-login="true"], body:has(input[name="auth[username]"])) form label {
+    :is(body[data-login="true"], body:has(input[name="auth[username]"])) form:has(input[name="auth[username]"]) label {
         display: flex;
         margin: 14px 0 0;
     }

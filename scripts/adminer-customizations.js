@@ -199,6 +199,24 @@
         }
     }
 
+    /* ===== Version relocation =================================== */
+    // The Adminer version (".version" span inside #menu h1) was
+    // overflowing past the brand wordmark on narrow sidebars. Move
+    // it into the top-right header-actions row, alongside the EN/TH
+    // language toggle, where it doesn't compete for horizontal space.
+    function relocateVersion(menu, header) {
+        if (!menu || !header) return;
+        var version = menu.querySelector('h1 .version');
+        if (!version) return;
+        // Prefix with "v" if Adminer didn't already (e.g. "5.4.2" → "v5.4.2").
+        var txt = (version.textContent || '').trim();
+        if (txt && txt[0] !== 'v' && txt[0] !== 'V') {
+            version.textContent = 'v' + txt;
+        }
+        // Insert at the start of the row so the order is: version → lang toggle.
+        header.insertBefore(version, header.firstChild);
+    }
+
     /* ===== Init ================================================ */
     function init() {
         var menu = document.getElementById('menu');
@@ -208,6 +226,8 @@
         header.className = 'menu-header-actions';
         header.appendChild(langToggle);
         (menu || document.body).appendChild(header);
+
+        relocateVersion(menu, header);
 
         // Theme toggle is floating bottom-right — attach to <body>, not the sidebar
         document.body.appendChild(buildThemeToggle());
