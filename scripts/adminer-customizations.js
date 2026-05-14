@@ -141,44 +141,83 @@
     var HAMBURGER_SVG = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>';
     var CLOSE_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M6 18L18 6"/></svg>';
 
-    /**
-     * Force-open the sidebar via inline style.setProperty(..., 'important').
-     * This beats ANY stylesheet including Adminer's bundled mobile CSS that
-     * might still want to keep #menu hidden.
-     * @param {HTMLElement} menu
-     */
-    function forceOpen(menu) {
-        document.documentElement.classList.add('menu-open');
-        document.body.classList.add('menu-open');
+    var OPEN_STYLE = [
+        'display: flex !important',
+        'flex-direction: column !important',
+        'visibility: visible !important',
+        'opacity: 1 !important',
+        'position: fixed !important',
+        'left: 0 !important',
+        'right: auto !important',
+        'top: 0 !important',
+        'bottom: 0 !important',
+        'transform: translateX(0) !important',
+        'width: var(--ui-sidebar-width, 310px) !important',
+        'max-width: 92vw !important',
+        'height: 100vh !important',
+        'z-index: 2147483600 !important',
+        'pointer-events: auto !important',
+        'overflow-y: auto !important'
+    ].join(';');
+
+    var CLOSE_STYLE = [
+        'transform: translateX(-105%) !important',
+        'pointer-events: none !important'
+    ].join(';');
+
+    /* Adminer builds use different class names to indicate "menu is open" —
+       we set every plausible one on both <html> and <body> so any of
+       Adminer's own selectors that depend on a class will also kick in. */
+    var OPEN_CLASSES = ['menu-open', 'open', 'openmenu', 'menutoggle', 'show-menu'];
+
+    /** @type {MutationObserver | null} */
+    var openObserver = null;
+
+    /** @param {HTMLElement} menu */
+    function applyOpenStyle(menu) {
         if (!menu) return;
-        var s = menu.style;
-        s.setProperty('display', 'flex', 'important');
-        s.setProperty('flex-direction', 'column', 'important');
-        s.setProperty('visibility', 'visible', 'important');
-        s.setProperty('opacity', '1', 'important');
-        s.setProperty('position', 'fixed', 'important');
-        s.setProperty('left', '0', 'important');
-        s.setProperty('right', 'auto', 'important');
-        s.setProperty('top', '0', 'important');
-        s.setProperty('bottom', '0', 'important');
-        s.setProperty('transform', 'translateX(0)', 'important');
-        s.setProperty('width', 'var(--ui-sidebar-width, 310px)', 'important');
-        s.setProperty('max-width', '92vw', 'important');
-        s.setProperty('height', '100vh', 'important');
-        s.setProperty('z-index', '250', 'important');
-        s.setProperty('pointer-events', 'auto', 'important');
-        s.setProperty('overflow-y', 'auto', 'important');
+        // Write atomically — overwrites whatever Adminer may have set.
+        menu.style.cssText = OPEN_STYLE;
+    }
+
+    /** @param {HTMLElement} menu */
+    function forceOpen(menu) {
+        OPEN_CLASSES.forEach(function (c) {
+            document.documentElement.classList.add(c);
+            document.body.classList.add(c);
+        });
+        if (!menu) return;
+        applyOpenStyle(menu);
+
+        // If anything tries to mutate #menu while we want it open, re-apply.
+        if (openObserver) openObserver.disconnect();
+        openObserver = new MutationObserver(function () {
+            if (document.documentElement.classList.contains('menu-open')) {
+                // Only re-apply if our style was wiped (cheap check on display)
+                if (menu.style.display !== 'flex' || menu.style.transform.indexOf('-') !== -1) {
+                    applyOpenStyle(menu);
+                }
+            }
+        });
+        openObserver.observe(menu, { attributes: true, attributeFilter: ['style', 'class'] });
     }
 
     /** @param {HTMLElement} menu */
     function forceClose(menu) {
-        document.documentElement.classList.remove('menu-open');
-        document.body.classList.remove('menu-open');
+        OPEN_CLASSES.forEach(function (c) {
+            document.documentElement.classList.remove(c);
+            document.body.classList.remove(c);
+        });
+        if (openObserver) { openObserver.disconnect(); openObserver = null; }
         if (!menu) return;
-        var s = menu.style;
-        s.setProperty('transform', 'translateX(-105%)', 'important');
-        // Keep inline display/visibility so the transition runs cleanly,
-        // then let the desktop @media rules reset on the next viewport change.
+        // Slide out then clear inline styles after the transition so desktop
+        // breakpoint rules can take back over cleanly.
+        menu.style.cssText = CLOSE_STYLE;
+        setTimeout(function () {
+            if (!document.documentElement.classList.contains('menu-open')) {
+                menu.style.cssText = '';
+            }
+        }, 360);
     }
 
     /** @param {HTMLElement} menu */
@@ -215,7 +254,8 @@
             trigger.innerHTML = HAMBURGER_SVG;
             trigger.addEventListener('click', function (e) {
                 e.preventDefault();
-                toggleSidebar(menu);
+                var fresh = document.getElementById('menu') || menu;
+                toggleSidebar(fresh);
             });
             document.body.appendChild(trigger);
         }
