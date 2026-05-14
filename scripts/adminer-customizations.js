@@ -169,6 +169,7 @@
             trigger.addEventListener('click', function (e) {
                 e.preventDefault();
                 document.documentElement.classList.toggle('menu-open');
+                document.body.classList.toggle('menu-open');
             });
             document.body.appendChild(trigger);
         }
@@ -182,6 +183,7 @@
             close.innerHTML = CLOSE_SVG;
             close.addEventListener('click', function () {
                 document.documentElement.classList.remove('menu-open');
+                document.body.classList.remove('menu-open');
             });
             menu.appendChild(close);
         }
@@ -192,6 +194,7 @@
             bd.className = 'sidebar-backdrop';
             bd.addEventListener('click', function () {
                 document.documentElement.classList.remove('menu-open');
+                document.body.classList.remove('menu-open');
             });
             document.body.appendChild(bd);
         }
@@ -204,12 +207,14 @@
             if (a.classList.contains('lang-btn')) return;
             if (a.classList.contains('theme-toggle')) return;
             document.documentElement.classList.remove('menu-open');
+            document.body.classList.remove('menu-open');
         });
 
         // 6) ESC closes
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 document.documentElement.classList.remove('menu-open');
+                document.body.classList.remove('menu-open');
             }
         });
     }

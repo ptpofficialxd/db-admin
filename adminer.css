@@ -1470,7 +1470,8 @@ body #menu h1 img {
 .custom-menu-trigger:active { transform: scale(0.95); }
 .custom-menu-trigger svg { display: block; }
 
-html.menu-open .custom-menu-trigger {
+html.menu-open .custom-menu-trigger,
+body.menu-open .custom-menu-trigger {
     /* tuck behind the open sidebar so the close-X is the obvious target */
     opacity: 0;
     pointer-events: none;
@@ -1812,20 +1813,22 @@ pre,
         box-shadow: none;
         z-index: 200;
     }
-    html.menu-open #menu {
+    html.menu-open #menu,
+body.menu-open #menu {
         transform: translateX(0);
         box-shadow: 24px 0 60px rgba(0, 0, 0, 0.45);
     }
 
     /* Backdrop becomes visible & interactive only while menu is open */
-    html.menu-open .sidebar-backdrop {
+    html.menu-open .sidebar-backdrop,
+body.menu-open .sidebar-backdrop {
         opacity: 1;
         pointer-events: auto;
     }
 
     /* Stop body scroll while the sidebar overlay is up */
-    html.menu-open,
-    html.menu-open body {
+    html.menu-open, body.menu-open,
+    html.menu-open body, body.menu-open {
         overflow: hidden;
     }
 }
@@ -2296,7 +2299,8 @@ button.icon.icon-move {
    mobile — beat that with !important AND the slide animation.
    ============================================================ */
 @media all and (max-width: 800px) {
-    html.menu-open #menu {
+    html.menu-open #menu,
+body.menu-open #menu {
         display: flex !important;
         visibility: visible !important;
         opacity: 1 !important;
@@ -2307,5 +2311,86 @@ button.icon.icon-move {
         bottom: 0 !important;
         z-index: 250 !important;
         pointer-events: auto !important;
+    }
+}
+
+
+/* ============================================================
+   Light-theme button text — the disabled action buttons (ANALYZE /
+   OPTIMIZE / CHECK / REPAIR / TRUNCATE / DROP, etc) inherit white
+   text from the dark theme which makes them invisible on a light
+   background. Switch them to dark text + a soft outlined surface.
+   Active gradient-green buttons (the "SELECT" search submit) keep
+   their white text via their own rule below.
+   ============================================================ */
+html[data-theme="light"] input[type="submit"],
+html[data-theme="light"] input[type="button"] {
+    color: #18181B !important;
+}
+
+html[data-theme="light"] input[type="submit"][disabled],
+html[data-theme="light"] input[type="button"][disabled],
+html[data-theme="light"] input[type="submit"][disabled]:hover,
+html[data-theme="light"] input[type="button"][disabled]:hover {
+    background: rgba(0, 0, 0, 0.04) !important;
+    color: rgba(24, 24, 27, 0.65) !important;
+    border: 1px solid rgba(0, 0, 0, 0.10) !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+}
+
+/* The primary green-gradient buttons (SELECT search submit etc) keep
+   white text in BOTH themes — they're already green so it reads. */
+html[data-theme="light"] input[type="submit"]:not([disabled]),
+html[data-theme="light"] input[type="button"]:not([disabled]) {
+    color: #FFFFFF !important;
+    background: linear-gradient(135deg, #16A34A, #22C55E) !important;
+    text-shadow: 0 1px 0 rgba(0, 0, 0, 0.10);
+}
+
+/* But the LOGOUT pill (its own special look) keeps its own colors */
+html[data-theme="light"] body .logout input[type="submit"],
+html[data-theme="light"] body .logout input[type="submit"]:not([disabled]) {
+    background: rgba(22, 163, 74, 0.10) !important;
+    color: #16A34A !important;
+    text-shadow: none;
+}
+html[data-theme="light"] body .logout input[type="submit"]:hover {
+    background: rgba(22, 163, 74, 0.18) !important;
+    color: #FFFFFF !important;
+}
+
+
+/* ============================================================
+   NUKE — Some Adminer 5.x builds set #menu { display:none } via
+   a media query AND a child-of-body rule. Match every conceivable
+   parent selector + max it out with !important so the sidebar
+   shows the moment either `html.menu-open` or `body.menu-open`
+   is on the page.
+   ============================================================ */
+@media all and (max-width: 800px) {
+    html.menu-open #menu,
+    body.menu-open #menu,
+    html.menu-open body #menu,
+    body.menu-open #menu.menu,
+    html.menu-open #menu.adminer,
+    body.menu-open #menu.adminer {
+        position: fixed !important;
+        display: flex !important;
+        flex-direction: column !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        transform: translateX(0) !important;
+        left: 0 !important;
+        right: auto !important;
+        top: 0 !important;
+        bottom: 0 !important;
+        width: var(--ui-sidebar-width) !important;
+        max-width: 92vw !important;
+        height: 100vh !important;
+        z-index: 250 !important;
+        pointer-events: auto !important;
+        box-shadow: 24px 0 60px rgba(0, 0, 0, 0.55) !important;
+        overflow-y: auto !important;
     }
 }
