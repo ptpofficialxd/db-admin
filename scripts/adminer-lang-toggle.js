@@ -49,16 +49,4 @@
         sep.textContent = '/';
 
         toggle.appendChild(makeLangLink('en', 'EN', currentLang === 'en'));
-        toggle.appendChild(sep);
-        toggle.appendChild(makeLangLink('th', 'TH', currentLang === 'th'));
-
-        var menu = document.getElementById('menu');
-        (menu || document.body).appendChild(toggle);
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
-    }
-})();
+        toggle.appen

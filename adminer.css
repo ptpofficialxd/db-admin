@@ -913,54 +913,53 @@ form p label {
     color: var(--color-schema-type-binary);
 }
 
-/* Pinned to top-right of the *viewport* (fixed) so when the user scrolls a
-   wide table horizontally, the picker stays glued to the right edge and
-   remains reachable. Vertical scroll is handled by the scroll-driven
-   animation below — the element fades up off-screen so it doesn't block
-   table data when scrolling down. */
+/* The native Adminer language dropdown is hidden — JS replaces it with a
+   compact "EN / TH" toggle injected into #menu (see .lang-toggle below).
+   The original <select> stays in DOM so the JS can read its current value. */
 body #lang {
-    position: fixed !important;
-    top: 14px !important;
-    right: 200px !important;        /* leaves room for "doadmin" + LOGOUT */
-    left: auto !important;
-    bottom: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    z-index: 100 !important;
-    line-height: normal !important;
-    font-size: 0 !important;
+    display: none !important;
 }
 
-body #lang select {
-    font-size: 12px !important;
-    padding: 6px 12px !important;       /* symmetric — width hugs the selected language */
-    border: 1px solid rgba(255, 255, 255, 0.10) !important;
-    background: rgba(255, 255, 255, 0.04) !important;
-    background-image: none !important;   /* kill the inherited dropdown-arrow PNG */
-    border-radius: 10px !important;
-    -webkit-appearance: none !important;
-    -moz-appearance: none !important;
-    appearance: none !important;
-    cursor: pointer;
-    outline: 0;
-    width: auto !important;
-    min-width: 0 !important;
-    text-align: center !important;
-    text-align-last: center !important;
-    color: #E4E4E7 !important;
-    transition: background 0.2s, color 0.2s, border-color 0.2s;
+/* JS-injected EN/TH toggle — lives inside #menu (sidebar) at the top-right
+   corner, above/near the adminer version text. Works identically on desktop
+   and mobile because #menu is the same containing block on both. */
+#menu .lang-toggle {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1;
+    z-index: 5;
+    user-select: none;
+    -webkit-user-select: none;
 }
 
-body #lang select:hover,
-body #lang select:focus {
-    background: rgba(34, 197, 94, 0.10) !important;
-    color: #FFFFFF !important;
-    border-color: rgba(34, 197, 94, 0.45) !important;
+#menu .lang-toggle .lang-btn {
+    color: rgba(244, 244, 245, 0.45);
+    text-decoration: none !important;
+    padding: 6px 10px;
+    border-radius: 8px;
+    transition: color 0.18s ease, background 0.18s ease;
 }
 
-body.rtl #lang {
-    right: auto !important;
-    left: 200px !important;
+#menu .lang-toggle .lang-btn:hover {
+    color: #22C55E;
+    background: rgba(34, 197, 94, 0.08);
+}
+
+#menu .lang-toggle .lang-btn.active {
+    color: #22C55E;
+    background: rgba(34, 197, 94, 0.12);
+    cursor: default;
+}
+
+#menu .lang-toggle .lang-sep {
+    color: rgba(244, 244, 245, 0.25);
+    font-weight: 400;
 }
 
 .message {
@@ -1451,234 +1450,4 @@ select:focus {
     box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12) !important;
 }
 
-input[type="submit"],
-input[type="button"] {
-    background: linear-gradient(135deg, #16A34A, #22C55E) !important;
-    color: #FFFFFF !important;
-    border: 0 !important;
-    border-radius: 12px !important;
-    box-shadow: var(--shadow-button) !important;
-    letter-spacing: 0.08em;
-}
-
-input[type="submit"]:hover,
-input[type="button"]:hover {
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-button-hover) !important;
-}
-
-.logout input[type="submit"] {
-    background: transparent !important;
-    color: var(--color-link) !important;
-    box-shadow: none !important;
-}
-
-/* SQL/code */
-pre,
-.sqlarea.jush,
-.jush {
-    background: #0F1115 !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    border-radius: 14px !important;
-}
-
-/* Footer/action area */
-.footer > div,
-.footer + div {
-    background: rgba(9, 9, 11, 0.92) !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-}
-
-/* Mobile polish */
-@media all and (max-width: 800px) {
-    :root {
-        --ui-content-spacing: 18px;
-    }
-
-    body {
-        font-size: 15px;
-    }
-
-    #content {
-        margin-left: var(--ui-content-spacing) !important;
-        margin-right: var(--ui-content-spacing) !important;
-        padding-top: 22px;
-    }
-
-    h2 {
-        font-size: 34px;
-        line-height: 1.08;
-        margin-bottom: 28px;
-    }
-
-    h3 {
-        font-size: 18px;
-        margin-top: 42px;
-    }
-
-    th,
-    td {
-        padding: 12px 14px !important;
-        font-size: 14px !important;
-        white-space: nowrap;
-    }
-
-    #content p.links {
-        overflow-x: auto;
-        white-space: nowrap;
-        margin-left: 0;
-        padding-bottom: 6px;
-    }
-
-    #content p.links a {
-        display: inline-block;
-        padding: 14px 16px;
-    }
-
-    fieldset {
-        margin-right: 14px;
-    }
-
-    input[type="submit"],
-    input[type="button"] {
-        min-height: 42px;
-        padding: 0 28px;
-    }
-}
-
-
-/*
-===============================================
-=      Mobile Logout & Lang Pin 2026          =
-===============================================
-*/
-
-@media all and (max-width: 800px) {
-
-  /* Adminer's .logout is NOT a child of #menu — don't try to flex it inside.
-     Pin it to the bottom of the viewport so it's always reachable on mobile. */
-  #menu {
-    display: block !important;
-  }
-
-  /* Lock the sidebar header to a known height so the LOGOUT pill below can be
-     aligned reliably. Adminer 5.4.2 renders <img> inside h1 which blows up on
-     iOS Safari — clamp it. */
-  body #menu h1 {
-    height: 70px !important;
-    max-height: 70px !important;
-    line-height: 50px !important;
-    padding: 10px 0 10px 75px !important;
-    margin: 0 0 16px 0 !important;
-    overflow: hidden !important;
-    box-sizing: border-box !important;
-  }
-  body #menu h1 a,
-  body #menu h1 img {
-    max-height: 50px !important;
-    width: auto !important;
-    vertical-align: middle !important;
-  }
-
-  /* Slot LOGOUT into the same row as the "defaultdb" selector, anchored from
-     the LEFT relative to the sidebar's actual width so it lands INSIDE the
-     sidebar (not the content area on the right). z-index above #menu (200). */
-  body .logout,
-  body p.logout {
-    position: fixed !important;
-    top: 86px !important;                                        /* h1 70px + margin 16px */
-    left: calc(var(--ui-sidebar-width) - 100px - 16px) !important; /* 16px gutter from sidebar's right edge */
-    right: auto !important;
-    bottom: auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100px !important;
-    max-width: 100px !important;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    text-align: center !important;
-    z-index: 300 !important;       /* above #menu (200) — sidebar bg would otherwise hide it */
-  }
-
-  /* Hide username link/text — only the submit stays inline next to #dbs. */
-  body .logout > a,
-  body .logout > span,
-  body .logout > b,
-  body p.logout > a,
-  body p.logout > span,
-  body p.logout > b {
-    display: none !important;
-  }
-
-  body .logout input,
-  body .logout input[type="submit"] {
-    width: 100% !important;
-    height: 44px !important;        /* matches #dbs select height */
-    margin: 0 !important;
-    padding: 0 8px !important;
-    border-radius: 10px !important;
-    background: rgba(34, 197, 94, 0.10) !important;
-    border: 1px solid rgba(34, 197, 94, 0.30) !important;
-    color: #22C55E !important;
-    font-size: 12px !important;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    line-height: normal !important;
-    text-align: center !important;
-    box-shadow: none !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    box-sizing: border-box !important;
-  }
-
-  body .logout input[type="submit"]:hover,
-  body .logout input[type="submit"]:active {
-    background: rgba(34, 197, 94, 0.18) !important;
-    color: #FFFFFF !important;
-    border-color: rgba(34, 197, 94, 0.55) !important;
-  }
-
-  /* Carve out space on the right of the defaultdb selector for the LOGOUT pill */
-  body #menu #dbs {
-    padding-right: 116px !important;   /* 100px button + 16px gap */
-    box-sizing: border-box !important;
-  }
-
-  /* Disable the desktop scroll-driven hide animation on mobile — the bottom
-     LOGOUT bar and top language picker should always stay visible here. */
-  body #lang,
-  body .logout,
-  body p.logout {
-    animation: none !important;
-    transform: none !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-  }
-
-  /* Move the language picker so it doesn't collide with anything on mobile.
-     Must use `body #lang` to match the desktop rule's specificity (101).
-     On mobile keep it pinned to the viewport (`fixed`) so it stays reachable. */
-  body #lang {
-    position: fixed !important;
-    top: 12px !important;
-    right: 12px !important;
-    left: auto !important;
-  }
-
-  body #lang select {
-    min-width: 0 !important;
-    padding: 6px 12px !important;     /* symmetric on mobile too */
-  }
-
-  /* LOGOUT is no longer a bottom bar — restore normal bottom padding. */
-  #content {
-    padding-bottom: 24px !important;
-  }
-
-  #menu {
-    padding-bottom: 24px !important;
-  }
-}
+input[type="submi

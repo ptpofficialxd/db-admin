@@ -1,4 +1,4 @@
-FROM adminer
+FROM adminer:5.4.2
 
 COPY adminer.css /var/www/html/adminer.css
 COPY scripts/   /var/www/html/scripts/
