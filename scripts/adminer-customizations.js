@@ -211,14 +211,14 @@
     function init() {
         var menu = document.getElementById('menu');
 
-        var themeBtn = buildThemeToggle();
         var langToggle = buildLangToggle(detectCurrentLang());
-
         var header = document.createElement('div');
         header.className = 'menu-header-actions';
-        header.appendChild(themeBtn);
         header.appendChild(langToggle);
         (menu || document.body).appendChild(header);
+
+        // Theme toggle is floating bottom-right — attach to <body>, not the sidebar
+        document.body.appendChild(buildThemeToggle());
 
         if (menu) {
             relocateLogout(menu);

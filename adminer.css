@@ -1403,27 +1403,36 @@ body #menu h1 img {
     position: static;       /* override the absolute positioning from earlier rule */
 }
 
+/* Floating theme switcher — pinned to bottom-right of the viewport so it's
+   reachable on every page without crowding the sidebar header. */
 .theme-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 350;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 46px;
+    height: 46px;
     padding: 0;
-    border: 1px solid rgba(255, 255, 255, 0.10);
-    border-radius: 10px;
-    background: rgba(255, 255, 255, 0.04);
-    color: rgba(244, 244, 245, 0.65);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 50%;
+    background: rgba(15, 17, 21, 0.88);
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    color: rgba(244, 244, 245, 0.75);
     cursor: pointer;
-    transition: background 0.18s, border-color 0.18s, color 0.18s, transform 0.18s;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+    transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.25s ease;
 }
 .theme-toggle:hover {
-    background: rgba(34, 197, 94, 0.10);
-    border-color: rgba(34, 197, 94, 0.35);
+    background: rgba(34, 197, 94, 0.15);
+    border-color: rgba(34, 197, 94, 0.55);
     color: #22C55E;
-    transform: rotate(15deg);
+    transform: rotate(18deg) scale(1.05);
 }
-.theme-toggle:active { transform: rotate(15deg) scale(0.95); }
+.theme-toggle:active { transform: rotate(18deg) scale(0.95); }
 .theme-toggle svg { display: block; }
 
 /* ============================================================
@@ -2012,3 +2021,140 @@ html[data-theme="light"] .sidebar-backdrop {
 html[data-theme="light"] #tables a:not(.select)::before {
     background: #16A34A !important;
 }
+
+
+/* ============================================================
+   Light-theme final overrides — placed at file end so source-order
+   wins against earlier `tbody tr:hover { background: #111318 !important }`
+   and similar dark-mode rules.
+   ============================================================ */
+
+/* Replace the dark-mode logo PNG with a green SVG database icon */
+html[data-theme="light"] #menu h1 {
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none' stroke='%2316A34A' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'><ellipse cx='32' cy='12' rx='22' ry='7'/><path d='M10 12v18c0 3.87 9.85 7 22 7s22-3.13 22-7V12'/><path d='M10 30v18c0 3.87 9.85 7 22 7s22-3.13 22-7V30'/></svg>") !important;
+    background-size: 56px 56px !important;
+    background-position: 8px center !important;
+    background-repeat: no-repeat !important;
+}
+
+/* Row hover — soft green wash instead of the dark grey from dark-mode rules */
+html[data-theme="light"] tbody tr:hover,
+html[data-theme="light"] tbody tr:hover td,
+html[data-theme="light"] tbody tr:hover th,
+html[data-theme="light"] .checkable tbody tr:hover th,
+html[data-theme="light"] .checkable tbody tr:hover td {
+    background: rgba(22, 163, 74, 0.075) !important;
+    color: #18181B !important;
+}
+html[data-theme="light"] tbody tr:hover th,
+html[data-theme="light"] tbody tr:hover th a {
+    color: #16A34A !important;
+}
+
+/* Checked row in light mode */
+html[data-theme="light"] .js .checkable .checked,
+html[data-theme="light"] .js .checkable .checked th,
+html[data-theme="light"] .js .checkable .checked td {
+    background: rgba(22, 163, 74, 0.14) !important;
+    color: #18181B !important;
+}
+
+/* Inline links inside table cells stay readable in light mode */
+html[data-theme="light"] tbody td a,
+html[data-theme="light"] tbody td a:visited {
+    color: #16A34A !important;
+}
+
+
+/* ============================================================
+   Light-theme text-color sweep — guarantees every label, header,
+   link and tab is legible against the white background.
+   ============================================================ */
+
+/* Default text color for all body content */
+html[data-theme="light"] body,
+html[data-theme="light"] body p,
+html[data-theme="light"] body span:not(.brand-db):not(.brand-name):not(.lang-sep),
+html[data-theme="light"] body label,
+html[data-theme="light"] body legend,
+html[data-theme="light"] body dt,
+html[data-theme="light"] body dd,
+html[data-theme="light"] body small,
+html[data-theme="light"] body em,
+html[data-theme="light"] body strong,
+html[data-theme="light"] body code {
+    color: #18181B !important;
+}
+
+/* Form table headers (Select / Search / Sort / Limit / Text length / Action) */
+html[data-theme="light"] thead th,
+html[data-theme="light"] thead td,
+html[data-theme="light"] .layout th,
+html[data-theme="light"] table.layout th,
+html[data-theme="light"] form > p > b,
+html[data-theme="light"] fieldset legend {
+    color: #16A34A !important;
+    background: transparent !important;
+}
+
+/* Generic links across content — green theme color */
+html[data-theme="light"] #content a,
+html[data-theme="light"] #content a:visited,
+html[data-theme="light"] body a:not(.lang-btn):not(.brand-name):not(.brand-db):not(.theme-toggle):not(.custom-menu-trigger):not(.sidebar-close),
+html[data-theme="light"] body a:not(.lang-btn):not(.brand-name):not(.brand-db):not(.theme-toggle):not(.custom-menu-trigger):not(.sidebar-close):visited {
+    color: #16A34A !important;
+}
+html[data-theme="light"] #content a:hover { color: #15803D !important; }
+
+/* Tab nav strip (Select data / Show structure / Alter table / New item) */
+html[data-theme="light"] #content p.links a {
+    color: #52525B !important;
+    background: rgba(0, 0, 0, 0.025) !important;
+    border-radius: 12px;
+}
+html[data-theme="light"] #content p.links a:hover {
+    color: #18181B !important;
+    background: rgba(0, 0, 0, 0.06) !important;
+}
+html[data-theme="light"] #content p.links a.active {
+    color: #18181B !important;
+    background: #FFFFFF !important;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.10) !important;
+}
+
+/* Sidebar links (SQL command / Import / Export / Create table) */
+html[data-theme="light"] #menu p.links a,
+html[data-theme="light"] #menu p.links a:visited {
+    color: #52525B !important;
+}
+html[data-theme="light"] #menu p.links a:hover { color: #16A34A !important; }
+html[data-theme="light"] #menu p.links a.active { color: #16A34A !important; font-weight: 600; }
+
+/* Time/edit hints after the SQL block ("(0.015 s) Edit") */
+html[data-theme="light"] #content > p {
+    color: #52525B !important;
+}
+html[data-theme="light"] #content > p a,
+html[data-theme="light"] #content > p a:visited {
+    color: #16A34A !important;
+}
+
+/* Form labels rendered as the SECOND row of `<th>` (LIMIT, TEXT LENGTH labels
+   that appear ABOVE the inputs in Adminer's select-data form) */
+html[data-theme="light"] #content form th,
+html[data-theme="light"] #content form b {
+    color: #16A34A !important;
+    background: transparent !important;
+}
+
+/* SQL syntax highlight on the white background */
+html[data-theme="light"] .jush,
+html[data-theme="light"] .jush * {
+    color: #18181B !important;
+}
+html[data-theme="light"] .jush-sql-kwd,
+html[data-theme="light"] .jush-kwd { color: #7C3AED !important; }
+html[data-theme="light"] .jush-num { color: #DC2626 !important; }
+html[data-theme="light"] .jush-quo,
+html[data-theme="light"] .jush-sql-quo { color: #16A34A !important; }
+html[data-theme="light"] .jush-fn { color: #2563EB !important; }
