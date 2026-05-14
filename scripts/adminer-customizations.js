@@ -1,21 +1,27 @@
 // @ts-check
-// EN/TH language toggle for Adminer.
-// Clicking a button programmatically sets the value of Adminer's native
-// <form id="lang"><select> and submits it — that's the only way Adminer
-// 5.x reliably persists the chosen language (it stores it in the session
-// after the form submit, not from a plain ?lang=xx GET).
+// Adminer UI customizations — all client-side tweaks live in this file.
+// New behaviors can be appended at the bottom; future scripts can also be
+// dropped into ./scripts/ as separate files (index.php inlines every *.js
+// in alphabetical order on each request).
 //
-// Paired with adminer.css (the `.lang-toggle` block).
+// Currently does:
+//   1. EN/TH language toggle that submits Adminer's native lang form
+//      (preserves CSRF + session-based language switch).
+//   2. Relocates the LOGOUT form into #menu so adminer.css can position it
+//      via `position: absolute` relative to the sidebar — robust against
+//      mobile browsers rendering #menu wider than --ui-sidebar-width.
+//
+// Paired with adminer.css.
 (function () {
     'use strict';
 
+    /* ============================================================
+       EN/TH language toggle
+       ============================================================ */
+
     /**
      * Adminer 5.x renders:
-     *   <form action="">
-     *     <div id="lang">…<select name="lang" onchange="this.form.submit();">…</select></div>
-     *   </form>
-     * So #lang is the WRAPPING DIV, not the form. We resolve the form via
-     * the select's `.form` property (or .closest('form') as a fallback).
+     *   <form action=""><div id="lang">…<select name="lang">…</select></div></form>
      * @returns {{form: HTMLFormElement, select: HTMLSelectElement} | null}
      */
     function findNativeLangForm() {
@@ -32,13 +38,10 @@
     function detectCurrentLang() {
         var native = findNativeLangForm();
         if (native && native.select.value) return native.select.value;
-
         var qp = new URLSearchParams(window.location.search).get('lang');
         if (qp) return qp;
-
         var htmlLang = document.documentElement.lang || '';
         if (htmlLang) return htmlLang.split('-')[0];
-
         return 'en';
     }
 
@@ -50,8 +53,6 @@
             native.form.submit();
             return;
         }
-        // Fallback for environments where Adminer didn't render the form
-        // (e.g. before login). Reload with ?lang=… and hope Adminer picks it up.
         var url = new URL(window.location.href);
         url.searchParams.set('lang', lang);
         window.location.href = url.toString();
@@ -77,30 +78,49 @@
         return a;
     }
 
-    function init() {
-        var currentLang = detectCurrentLang();
-
+    /** @param {string} currentLang */
+    function buildLangToggle(currentLang) {
         var toggle = document.createElement('div');
         toggle.className = 'lang-toggle';
-
         var sep = document.createElement('span');
         sep.className = 'lang-sep';
         sep.textContent = '/';
-
         toggle.appendChild(makeLangLink('en', 'EN', currentLang === 'en'));
         toggle.appendChild(sep);
         toggle.appendChild(makeLangLink('th', 'TH', currentLang === 'th'));
+        return toggle;
+    }
 
+    /* ============================================================
+       LOGOUT relocation
+       ============================================================ */
+
+    /**
+     * Move Adminer's logout form into #menu so it inherits the sidebar's
+     * positioning context. We move the DOM node — not clone or recreate —
+     * so the form's action / method / CSRF inputs stay intact.
+     * @param {HTMLElement} menu
+     */
+    function relocateLogout(menu) {
+        var logoutPara = document.querySelector('.logout, p.logout');
+        if (!logoutPara) return;
+        var form = logoutPara.closest('form') || logoutPara;
+        if (form.parentNode === menu) return;
+        menu.appendChild(form);
+    }
+
+    /* ============================================================
+       Init
+       ============================================================ */
+
+    function init() {
         var menu = document.getElementById('menu');
-        if (menu) {
-            menu.appendChild(toggle);
-        } else {
-            toggle.style.position = 'fixed';
-            toggle.style.top = '16px';
-            toggle.style.right = '16px';
-            toggle.style.zIndex = '9999';
-            document.body.appendChild(toggle);
-        }
+
+        var toggle = buildLangToggle(detectCurrentLang());
+        if (menu) menu.appendChild(toggle);
+        else document.body.appendChild(toggle);
+
+        if (menu) relocateLogout(menu);
     }
 
     if (document.readyState === 'loading') {

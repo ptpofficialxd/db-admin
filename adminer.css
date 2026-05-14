@@ -1269,15 +1269,17 @@ body {
 /* UNIVERSAL — LOGOUT lives on the sidebar at every viewport size (mobile,
    tablet, desktop). Anchored from the LEFT relative to the sidebar's width
    so the pill always sits next to defaultdb, never out in the content area. */
+/* LOGOUT is moved into #menu by adminer-lang-toggle.js so we can position
+   it relative to the sidebar's REAL rendered box — not via fragile viewport
+   math that broke on mobile when #menu rendered wider than --ui-sidebar-width. */
+body #menu form:has(.logout),
+body #menu form:has(p.logout),
 body .logout,
 body p.logout {
-    position: fixed !important;
-    /* #menu has padding: 25px → h1 starts at y=25, ends y=95, margin-bottom 16
-       → #dbs starts at y=111. Same calc for left: sidebar 310 - menu-pad 25
-       - button 100 = 185. */
-    top: 111px !important;
-    left: calc(var(--ui-sidebar-width) - 25px - 100px) !important;
-    right: auto !important;
+    position: absolute !important;
+    top: 111px !important;                  /* aligns with #dbs row (menu-pad 25 + h1 70 + margin 16) */
+    right: 25px !important;                 /* matches #menu's padding-right exactly */
+    left: auto !important;
     bottom: auto !important;
     margin: 0 !important;
     padding: 0 !important;
@@ -1288,7 +1290,7 @@ body p.logout {
     border: none !important;
     box-shadow: none !important;
     text-align: center !important;
-    z-index: 300 !important;
+    z-index: 5 !important;
     box-sizing: border-box !important;
 }
 
@@ -1610,14 +1612,4 @@ pre,
         padding-bottom: 24px !important;
     }
 
-    /* On mobile, Adminer renders #menu wider than --ui-sidebar-width (it
-       expands to roughly the full viewport when the overlay sidebar opens),
-       so the desktop `left: calc(310 - 25 - 100)` math lands the LOGOUT pill
-       INSIDE the defaultdb select. Anchor from the right edge instead — the
-       sidebar's right edge ≈ viewport's right edge on these narrow widths. */
-    body .logout,
-    body p.logout {
-        left: auto !important;
-        right: 25px !important;
-    }
 }
