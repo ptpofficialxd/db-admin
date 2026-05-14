@@ -1,25 +1,23 @@
 // @ts-check
-// Adminer UI customizations — all client-side tweaks live in this file.
-// New behaviors can be appended at the bottom; future scripts can also be
-// dropped into ./scripts/ as separate files (index.php inlines every *.js
-// in alphabetical order on each request).
+// Adminer UI customizations. New behaviors append at the bottom; drop additional
+// .js files into ./scripts/ if you want to keep them separate — index.php
+// inlines every file in alphabetical order on each request.
 //
-// Currently does:
-//   1. EN/TH language toggle that submits Adminer's native lang form.
-//   2. Relocates the LOGOUT form into #menu for robust sidebar positioning.
-//   3. Rebrands the "Adminer" wordmark and tab title to "ptpofficialxdDB".
-//
-// Paired with adminer.css.
+// Sections:
+//   1. EN/TH language toggle      — submits Adminer's native lang form
+//   2. LOGOUT relocation          — moves form into #menu for clean positioning
+//   3. Brand rebrand              — "adminer" → "ptpofficialxdDB"
+//   4. Brand link rewrite         — header anchor goes to the DB list, not adminer.org
+//   5. Theme toggle (light/dark)  — persisted in localStorage on <html data-theme>
+//   6. Mobile sidebar UI          — modern hamburger, slide animation, close X, backdrop
 (function () {
     'use strict';
 
     /* ============================================================
-       EN/TH language toggle
+       1. EN/TH language toggle
        ============================================================ */
 
     /**
-     * Adminer 5.x renders:
-     *   <form action=""><div id="lang">…<select name="lang">…</select></div></form>
      * @returns {{form: HTMLFormElement, select: HTMLSelectElement} | null}
      */
     function findNativeLangForm() {
@@ -60,7 +58,6 @@
      * @param {string} lang
      * @param {string} label
      * @param {boolean} isActive
-     * @returns {HTMLAnchorElement}
      */
     function makeLangLink(lang, label, isActive) {
         var a = document.createElement('a');
@@ -68,9 +65,8 @@
         a.textContent = label;
         a.className = 'lang-btn' + (isActive ? ' active' : '');
         a.setAttribute('role', 'button');
-        a.setAttribute('aria-label', 'Switch to ' + label);
-        a.addEventListener('click', function (event) {
-            event.preventDefault();
+        a.addEventListener('click', function (e) {
+            e.preventDefault();
             if (!isActive) switchLang(lang);
         });
         return a;
@@ -90,15 +86,10 @@
     }
 
     /* ============================================================
-       LOGOUT relocation
+       2. LOGOUT relocation
        ============================================================ */
 
-    /**
-     * Move Adminer's logout form into #menu so it inherits the sidebar's
-     * positioning context. We move the DOM node — not clone or recreate —
-     * so the form's action / method / CSRF inputs stay intact.
-     * @param {HTMLElement} menu
-     */
+    /** @param {HTMLElement} menu */
     function relocateLogout(menu) {
         var logoutPara = document.querySelector('.logout, p.logout');
         if (!logoutPara) return;
@@ -108,30 +99,20 @@
     }
 
     /* ============================================================
-       Rebrand wordmark + tab title
+       3. Brand rebrand wordmark + tab title
        ============================================================ */
 
     var BRAND_PREFIX = 'ptpofficialxd';   // white
-    var BRAND_SUFFIX = 'DB';               // green (theme color)
+    var BRAND_SUFFIX = 'DB';               // theme green
     var BRAND_FULL = BRAND_PREFIX + BRAND_SUFFIX;
 
-    /**
-     * Replace the "adminer" text inside the sidebar <h1><a> with two
-     * differently-colored spans. The h1's background logo image and the
-     * version <span class="version"> stay untouched.
-     */
     function rebrandHeader() {
         var link = document.querySelector('#menu h1 a');
         if (!link) return;
-        // Idempotent — bail out if already rebranded.
         if (link.querySelector('.brand-name')) return;
 
-        // Wipe direct text nodes only — preserves any nested elements
-        // Adminer might emit (e.g. <span class="version">5.4.2</span>).
         Array.prototype.slice.call(link.childNodes).forEach(function (node) {
-            if (node.nodeType === Node.TEXT_NODE) {
-                link.removeChild(node);
-            }
+            if (node.nodeType === Node.TEXT_NODE) link.removeChild(node);
         });
 
         var name = document.createElement('span');
@@ -146,13 +127,121 @@
         link.insertBefore(name, db);
     }
 
-    /**
-     * Adminer appends " - Adminer" to the document.title. Swap that suffix
-     * for our brand so the browser tab matches.
-     */
     function rebrandTitle() {
         if (!document.title) return;
         document.title = document.title.replace(/ - Adminer\b/i, ' - ' + BRAND_FULL);
+    }
+
+    /* ============================================================
+       4. Rewrite brand-link href → DB list page (not adminer.org)
+       ============================================================ */
+
+    function rewriteBrandLink() {
+        var link = /** @type {HTMLAnchorElement | null} */ (
+            document.querySelector('#menu h1 a')
+        );
+        if (!link) return;
+        var url = new URL(window.location.href);
+        ['db', 'ns', 'table', 'select', 'edit', 'where', 'schema',
+         'create', 'view', 'foreign', 'trigger', 'sequence', 'type', 'procedure',
+         'event', 'sql', 'import', 'dump', 'privileges', 'user', 'processlist',
+         'variables', 'status'].forEach(function (p) {
+            url.searchParams.delete(p);
+        });
+        link.href = url.pathname + (url.search || '');
+        link.removeAttribute('target');
+        link.removeAttribute('rel');
+        link.title = 'Database list';
+    }
+
+    /* ============================================================
+       5. Theme toggle (light / dark)
+       ============================================================ */
+
+    var THEME_KEY = 'adminer-theme';
+    var SUN_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>';
+    var MOON_SVG = '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+
+    function applyTheme(theme) {
+        document.documentElement.setAttribute('data-theme', theme);
+    }
+
+    function buildThemeToggle() {
+        var saved = localStorage.getItem(THEME_KEY) || 'dark';
+        applyTheme(saved);
+
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'theme-toggle';
+        btn.setAttribute('aria-label', 'Toggle theme');
+        btn.title = 'Toggle light/dark theme';
+        btn.innerHTML = saved === 'dark' ? SUN_SVG : MOON_SVG;
+
+        btn.addEventListener('click', function () {
+            var current = document.documentElement.getAttribute('data-theme') || 'dark';
+            var next = current === 'dark' ? 'light' : 'dark';
+            applyTheme(next);
+            try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* ignore */ }
+            btn.innerHTML = next === 'dark' ? SUN_SVG : MOON_SVG;
+        });
+
+        return btn;
+    }
+
+    /* ============================================================
+       6. Mobile sidebar — modern hamburger, slide animation, close X, backdrop
+       ============================================================ */
+
+    var HAMBURGER_SVG = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>';
+    var CLOSE_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M6 18L18 6"/></svg>';
+
+    function setupSidebarUI(menu) {
+        // Modernize Adminer's built-in menu-toggle
+        var trigger = document.getElementById('menu-toggle');
+        if (trigger) {
+            trigger.classList.add('menu-trigger');
+            trigger.innerHTML = HAMBURGER_SVG;
+            trigger.setAttribute('aria-label', 'Open sidebar');
+            // Replace any inline onclick / native handler with our own.
+            var fresh = trigger.cloneNode(true);
+            trigger.parentNode.replaceChild(fresh, trigger);
+            fresh.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.documentElement.classList.toggle('menu-open');
+            });
+        }
+
+        // Close (×) button inside the sidebar
+        if (!menu.querySelector('.sidebar-close')) {
+            var close = document.createElement('button');
+            close.type = 'button';
+            close.className = 'sidebar-close';
+            close.setAttribute('aria-label', 'Close sidebar');
+            close.innerHTML = CLOSE_SVG;
+            close.addEventListener('click', function () {
+                document.documentElement.classList.remove('menu-open');
+            });
+            menu.appendChild(close);
+        }
+
+        // Click-to-dismiss backdrop
+        if (!document.querySelector('.sidebar-backdrop')) {
+            var backdrop = document.createElement('div');
+            backdrop.className = 'sidebar-backdrop';
+            backdrop.addEventListener('click', function () {
+                document.documentElement.classList.remove('menu-open');
+            });
+            document.body.appendChild(backdrop);
+        }
+
+        // Auto-close when a nav link is followed (mobile UX nicety)
+        menu.addEventListener('click', function (e) {
+            var t = /** @type {Element} */ (e.target);
+            var a = t && t.closest('a');
+            if (a && !a.classList.contains('lang-btn') && !a.classList.contains('theme-toggle')) {
+                document.documentElement.classList.remove('menu-open');
+            }
+        });
     }
 
     /* ============================================================
@@ -162,14 +251,30 @@
     function init() {
         var menu = document.getElementById('menu');
 
-        var toggle = buildLangToggle(detectCurrentLang());
-        if (menu) menu.appendChild(toggle);
-        else document.body.appendChild(toggle);
+        // Theme first so saved value is applied before paint (kept inside init
+        // because we already wait for DOMContentLoaded — there's no FOUC risk
+        // worth a separate inline blocking script for this small change).
+        var themeBtn = buildThemeToggle();
 
-        if (menu) relocateLogout(menu);
+        // Lang toggle
+        var langToggle = buildLangToggle(detectCurrentLang());
+
+        // Group theme + lang in a single header-row container so they stack
+        // predictably regardless of #menu's other contents.
+        var header = document.createElement('div');
+        header.className = 'menu-header-actions';
+        header.appendChild(themeBtn);
+        header.appendChild(langToggle);
+        (menu || document.body).appendChild(header);
+
+        if (menu) {
+            relocateLogout(menu);
+            setupSidebarUI(menu);
+        }
 
         rebrandHeader();
         rebrandTitle();
+        rewriteBrandLink();
     }
 
     if (document.readyState === 'loading') {
