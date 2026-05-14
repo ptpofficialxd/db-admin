@@ -1563,17 +1563,16 @@ pre,
     display: block !important;
   }
 
-  /* Slot LOGOUT into the same row as the "defaultdb" selector instead of
-     pinning it as a bottom bar (which got covered by Safari's tab strip on
-     iOS). LOGOUT becomes a small fixed pill at top-right, aligned to the
-     #dbs row, with the select narrowed to make room. */
+  /* Slot LOGOUT into the same row as the "defaultdb" selector — but anchor it
+     from the LEFT relative to the sidebar's actual width (310px) so it lands
+     INSIDE the sidebar, not out in the content area on the right. */
   body .logout,
   body p.logout {
     position: fixed !important;
-    top: 85px !important;          /* matches #dbs vertical position (h1 ~70px + 15px margin) */
-    right: 16px !important;
+    top: 85px !important;                                        /* matches #dbs row */
+    left: calc(var(--ui-sidebar-width) - 100px - 16px) !important; /* 16px gutter from sidebar's right edge */
+    right: auto !important;
     bottom: auto !important;
-    left: auto !important;
     margin: 0 !important;
     padding: 0 !important;
     width: 100px !important;
