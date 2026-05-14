@@ -913,18 +913,20 @@ form p label {
     color: var(--color-schema-type-binary);
 }
 
-/* Desktop: use `position: absolute` so the picker sits at the top of the page
-   and scrolls away when the user scrolls down (instead of blocking table cells
-   on the right). Mobile overrides this to `fixed` further down in the file. */
+/* Pin language picker to top-right of viewport. `fixed` is required here —
+   `absolute` would get trapped inside #menu's containing block (since #menu is
+   itself position:fixed in Adminer's base CSS). z-index above sidebar so it's
+   never covered. */
 body #lang {
-    position: absolute !important;
+    position: fixed !important;
     top: 14px !important;
     right: 200px !important;        /* leaves room for "doadmin" + LOGOUT */
     left: auto !important;
     bottom: auto !important;
     margin: 0 !important;
     padding: 0 !important;
-    z-index: 100 !important;
+    z-index: 100 !important;        /* below sidebar (200) so the sidebar's opaque bg
+                                       covers it if they ever visually overlap */
     line-height: normal !important;
     font-size: 0 !important;
 }
@@ -1260,6 +1262,25 @@ body {
                                                   block for fixed descendants — that's why #lang
                                                   was getting trapped inside the 310px sidebar */
     -webkit-backdrop-filter: none !important;
+    z-index: 200 !important;                   /* sidebar wins the z-stack so its opaque
+                                                  background covers any element that visually
+                                                  overlaps it on narrow tablet viewports */
+}
+
+/* Pin LOGOUT firmly to the top-right corner of the viewport so it sits in the
+   content area, not over the sidebar. */
+body .logout,
+body p.logout {
+    position: fixed !important;
+    top: 14px !important;
+    right: 40px !important;
+    left: auto !important;
+    bottom: auto !important;
+    margin: 0 !important;
+    z-index: 80 !important;          /* below sidebar (200) — if they overlap on a narrow
+                                        tablet, the sidebar's opaque bg covers it cleanly */
+    max-width: calc(100vw - var(--ui-sidebar-width) - 60px);
+    text-align: right;
 }
 
 #menu h1,
