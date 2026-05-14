@@ -913,20 +913,19 @@ form p label {
     color: var(--color-schema-type-binary);
 }
 
-/* Pin language picker to top-right of viewport. `fixed` is required here —
-   `absolute` would get trapped inside #menu's containing block (since #menu is
-   itself position:fixed in Adminer's base CSS). z-index above sidebar so it's
-   never covered. */
+/* Anchor language picker to top of the *document* (absolute, not fixed) so it
+   scrolls away with the page instead of following the viewport down and
+   blocking table data. Mobile rule below overrides this back to `fixed` so
+   it's always reachable on phones. */
 body #lang {
-    position: fixed !important;
+    position: absolute !important;
     top: 14px !important;
     right: 200px !important;        /* leaves room for "doadmin" + LOGOUT */
     left: auto !important;
     bottom: auto !important;
     margin: 0 !important;
     padding: 0 !important;
-    z-index: 100 !important;        /* below sidebar (200) so the sidebar's opaque bg
-                                       covers it if they ever visually overlap */
+    z-index: 100 !important;
     line-height: normal !important;
     font-size: 0 !important;
 }
@@ -1267,18 +1266,19 @@ body {
                                                   overlaps it on narrow tablet viewports */
 }
 
-/* Pin LOGOUT firmly to the top-right corner of the viewport so it sits in the
-   content area, not over the sidebar. */
+/* Anchor LOGOUT (and the username link Adminer renders right above it) to the
+   top of the document, not the viewport — so they scroll away with the page
+   instead of hovering over table data. Mobile rule (further down) overrides
+   this to a fixed bottom bar so it stays reachable on phones. */
 body .logout,
 body p.logout {
-    position: fixed !important;
+    position: absolute !important;
     top: 14px !important;
     right: 40px !important;
     left: auto !important;
     bottom: auto !important;
     margin: 0 !important;
-    z-index: 80 !important;          /* below sidebar (200) — if they overlap on a narrow
-                                        tablet, the sidebar's opaque bg covers it cleanly */
+    z-index: 80 !important;
     max-width: calc(100vw - var(--ui-sidebar-width) - 60px);
     text-align: right;
 }
@@ -1533,8 +1533,10 @@ pre,
     display: block !important;
   }
 
-  .logout,
-  p.logout {
+  /* Use `body` prefix to match the desktop rule's specificity (and beat it on
+     mobile). Pinned to the bottom of the viewport as a full-width bar. */
+  body .logout,
+  body p.logout {
     position: fixed !important;
     top: auto !important;
     left: 16px !important;
@@ -1545,6 +1547,8 @@ pre,
     background: transparent !important;
     box-shadow: none !important;
     width: auto !important;
+    max-width: none !important;
+    text-align: center !important;
     z-index: 100 !important;
   }
 
