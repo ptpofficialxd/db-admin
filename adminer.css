@@ -2130,10 +2130,6 @@ html[data-theme="light"] .footer + div input[name="target"] {
 }
 
 
-/* ============================================================
-   Hide every variant of Adminer's native mobile menu trigger so it
-   doesn't sit beside our /* ============================================================
-   When OUR hamburger toggles `}
 
 
 /* ============================================================
@@ -2180,19 +2176,6 @@ html[data-theme="light"] body .logout input[type="submit"]:hover {
     background: rgba(22, 163, 74, 0.18) !important;
     color: #FFFFFF !important;
 }
-
-
-/* ============================================================
-   NUKE — Some Adminer 5.x builds set #menu { display:none } via
-   a media query AND a child-of-body rule. Match every conceivable
-   parent selector + max it out with !important so the sidebar
-   shows the moment either `}
-
-
-/* ============================================================
-   Mobile sidebar — clean v3
-   #menu always exists in DOM (display:flex) but starts offscreen.
-   Only `transform` changes when `}
 
 
 /* ============================================================
