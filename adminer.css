@@ -1668,50 +1668,41 @@ pre,
 
 /*
 ===============================================
-=      Polished Sidebar Branding Fix 2026     =
-=      No overflow, premium spacing           =
+=   Final Premium Branding Fix 2026           =
+=   Full text + green db + tighter language    =
 ===============================================
 */
 
-/*
-  Goal:
-  - Keep logo on the left
-  - Replace "adminer 5.x" with "ptpofficialxd-db"
-  - White: ptpofficialxd-
-  - Green: db
-  - Never overflow outside the sidebar
-*/
-
-/* Sidebar brand row */
+/* Brand area */
 #menu h1 {
   position: relative !important;
-  min-height: 86px !important;
+  min-height: 78px !important;
   box-sizing: border-box !important;
 
   display: flex !important;
   align-items: center !important;
 
-  padding: 18px 18px 18px 94px !important;
-  margin: 0 0 22px 0 !important;
+  padding: 16px 12px 14px 86px !important;
+  margin: 0 0 10px 0 !important;
 
-  overflow: hidden !important;
+  overflow: visible !important;
 
-  background-size: 72px auto !important;
+  background-size: 66px auto !important;
   background-repeat: no-repeat !important;
-  background-position: 16px center !important;
+  background-position: 14px center !important;
 }
 
-/* Hide original Adminer link text safely */
+/* Hide original Adminer text */
 #menu h1 a {
   position: relative !important;
   display: block !important;
 
-  width: 100% !important;
-  max-width: 178px !important;
-  height: 32px !important;
-  line-height: 32px !important;
+  width: 212px !important;
+  max-width: 212px !important;
+  height: 34px !important;
+  line-height: 34px !important;
 
-  overflow: hidden !important;
+  overflow: visible !important;
   font-size: 0 !important;
   color: transparent !important;
   text-decoration: none !important;
@@ -1722,9 +1713,9 @@ pre,
   display: none !important;
 }
 
-/* Brand text */
+/* White part */
 #menu h1 a::after {
-  content: "ptpofficialxd-db";
+  content: "ptpofficialxd-";
 
   position: absolute !important;
   left: 0 !important;
@@ -1732,8 +1723,6 @@ pre,
   transform: translateY(-50%) !important;
 
   display: block !important;
-  width: 178px !important;
-  max-width: 178px !important;
   white-space: nowrap !important;
 
   font-family: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
@@ -1742,151 +1731,202 @@ pre,
   line-height: 1 !important;
   letter-spacing: -1px !important;
 
-  color: transparent !important;
+  color: #F4F4F5 !important;
 
-  /*
-    Gradient split:
-    "ptpofficialxd-" = white
-    "db" = green
-  */
-  background: linear-gradient(
-    90deg,
-    #F4F4F5 0%,
-    #F4F4F5 85.5%,
-    #22C55E 85.5%,
-    #22C55E 100%
-  ) !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-
-  filter:
-    drop-shadow(0 0 8px rgba(255,255,255,0.05))
-    drop-shadow(0 0 14px rgba(34,197,94,0.12));
+  text-shadow:
+    0 0 10px rgba(255,255,255,0.10),
+    0 0 22px rgba(255,255,255,0.045),
+    0 10px 30px rgba(0,0,0,0.34);
 }
 
-/* Hover: subtle premium glow only, no movement */
+/* Green db part */
+#menu h1 a::before {
+  content: "db";
+
+  position: absolute !important;
+  left: 183px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+
+  display: block !important;
+  white-space: nowrap !important;
+
+  font-family: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 22px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+  letter-spacing: -1px !important;
+
+  color: #22C55E !important;
+
+  text-shadow:
+    0 0 10px rgba(34,197,94,0.60),
+    0 0 24px rgba(34,197,94,0.32),
+    0 0 42px rgba(34,197,94,0.16);
+}
+
+/* Premium hover */
 #menu h1:hover a::after {
-  background: linear-gradient(
-    90deg,
-    #FFFFFF 0%,
-    #FFFFFF 85.5%,
-    #4ADE80 85.5%,
-    #4ADE80 100%
-  ) !important;
-  -webkit-background-clip: text !important;
-  background-clip: text !important;
-
-  filter:
-    drop-shadow(0 0 9px rgba(255,255,255,0.07))
-    drop-shadow(0 0 18px rgba(74,222,128,0.18));
+  color: #FFFFFF !important;
+  text-shadow:
+    0 0 12px rgba(255,255,255,0.16),
+    0 0 26px rgba(255,255,255,0.07);
 }
 
-/* Put language selector below brand, aligned nicely */
+#menu h1:hover a::before {
+  color: #4ADE80 !important;
+  text-shadow:
+    0 0 12px rgba(74,222,128,0.72),
+    0 0 30px rgba(74,222,128,0.42),
+    0 0 54px rgba(74,222,128,0.22);
+}
+
+/* Tighter, cleaner language selector */
 #lang {
-  top: 148px !important;
-  left: 136px !important;
+  top: 112px !important;
+  left: 146px !important;
   right: auto !important;
-  width: 124px !important;
+  width: 118px !important;
+  margin: 0 !important;
+  z-index: 99999 !important;
 }
 
 #lang select {
-  width: 124px !important;
-  min-width: 124px !important;
-  max-width: 124px !important;
+  width: 118px !important;
+  min-width: 118px !important;
+  max-width: 118px !important;
+  height: 30px !important;
+  line-height: 30px !important;
+  padding: 0 28px 0 13px !important;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.085), rgba(255,255,255,0.035)),
+    #111318 !important;
+  border: 1px solid rgba(34,197,94,0.32) !important;
+  border-radius: 999px !important;
+  box-shadow:
+    0 12px 28px rgba(0,0,0,0.32),
+    0 0 18px rgba(34,197,94,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.07) !important;
 }
 
-/* Desktop sidebar content spacing */
+#lang::after {
+  right: 10px !important;
+  color: #22C55E !important;
+}
+
+/* Bring database selector closer after brand */
 #menu #dbs {
-  margin-top: 8px !important;
+  margin-top: 6px !important;
 }
 
-/* Tablet / narrow desktop */
-@media all and (max-width: 1100px) {
+/* Narrow desktop */
+@media all and (max-width: 1200px) {
   #menu h1 {
-    padding-left: 90px !important;
-    background-size: 68px auto !important;
+    padding-left: 82px !important;
+    background-size: 64px auto !important;
+    background-position: 13px center !important;
   }
 
-  #menu h1 a,
-  #menu h1 a::after {
-    width: 172px !important;
-    max-width: 172px !important;
+  #menu h1 a {
+    width: 205px !important;
+    max-width: 205px !important;
   }
 
-  #menu h1 a::after {
+  #menu h1 a::after,
+  #menu h1 a::before {
     font-size: 21px !important;
   }
 
+  #menu h1 a::before {
+    left: 174px !important;
+  }
+
   #lang {
-    left: 132px !important;
+    left: 140px !important;
+    top: 108px !important;
   }
 }
 
 /* Mobile */
 @media all and (max-width: 800px) {
   #menu h1 {
-    min-height: 82px !important;
-    padding: 16px 16px 16px 90px !important;
-    margin-bottom: 20px !important;
-    background-size: 68px auto !important;
-    background-position: 16px center !important;
+    min-height: 74px !important;
+    padding: 14px 12px 12px 82px !important;
+    margin-bottom: 8px !important;
+    background-size: 62px auto !important;
+    background-position: 14px center !important;
   }
 
-  #menu h1 a,
-  #menu h1 a::after {
-    width: 172px !important;
-    max-width: 172px !important;
+  #menu h1 a {
+    width: 202px !important;
+    max-width: 202px !important;
+    height: 32px !important;
   }
 
-  #menu h1 a::after {
-    font-size: 21px !important;
-    letter-spacing: -0.95px !important;
+  #menu h1 a::after,
+  #menu h1 a::before {
+    font-size: 20px !important;
+    letter-spacing: -0.9px !important;
+  }
+
+  #menu h1 a::before {
+    left: 166px !important;
   }
 
   #lang {
     position: absolute !important;
-    top: 124px !important;
-    right: 22px !important;
+    top: 98px !important;
+    right: 24px !important;
     left: auto !important;
-    width: 124px !important;
+    width: 112px !important;
   }
 
   #lang select {
-    width: 124px !important;
-    min-width: 124px !important;
-    max-width: 124px !important;
+    width: 112px !important;
+    min-width: 112px !important;
+    max-width: 112px !important;
+    height: 30px !important;
+    line-height: 30px !important;
   }
 }
 
 /* Small phones */
 @media all and (max-width: 420px) {
   #menu h1 {
-    min-height: 78px !important;
-    padding-left: 84px !important;
-    background-size: 64px auto !important;
-    background-position: 14px center !important;
+    min-height: 72px !important;
+    padding-left: 78px !important;
+    background-size: 60px auto !important;
+    background-position: 12px center !important;
   }
 
-  #menu h1 a,
-  #menu h1 a::after {
-    width: 164px !important;
-    max-width: 164px !important;
+  #menu h1 a {
+    width: 196px !important;
+    max-width: 196px !important;
   }
 
-  #menu h1 a::after {
-    font-size: 20px !important;
-    letter-spacing: -0.9px !important;
+  #menu h1 a::after,
+  #menu h1 a::before {
+    font-size: 19px !important;
+    letter-spacing: -0.82px !important;
+  }
+
+  #menu h1 a::before {
+    left: 158px !important;
   }
 
   #lang {
-    top: 120px !important;
+    top: 94px !important;
     right: 18px !important;
-    width: 116px !important;
+    width: 108px !important;
   }
 
   #lang select {
-    width: 116px !important;
-    min-width: 116px !important;
-    max-width: 116px !important;
+    width: 108px !important;
+    min-width: 108px !important;
+    max-width: 108px !important;
+    font-size: 12px !important;
   }
 }
