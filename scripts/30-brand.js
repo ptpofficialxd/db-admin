@@ -14,15 +14,29 @@
     var BRAND_SUFFIX = 'DB';
     var BRAND_FULL = BRAND_PREFIX + BRAND_SUFFIX;
 
-    // Connection / nav params that should NOT survive in the brand-link
-    // href — clicking the brand should go to the DB list, not back to
-    // the currently-open table or query.
+    // Navigation params Adminer puts in the query string for the
+    // currently-open table / query / view. Clicking the brand should
+    // go to the DB list, so these get stripped.
+    //
+    // NOTE: We deliberately DO NOT strip `server` or `username` here —
+    // Adminer needs them to identify the authenticated session. To
+    // prevent them leaking via DOM inspection, the brand link's href
+    // is set to "#" and navigation is done programmatically in the
+    // click handler below.
     var NAV_PARAMS = [
         'db', 'ns', 'table', 'select', 'edit', 'where', 'schema',
         'create', 'view', 'foreign', 'trigger', 'sequence', 'type',
         'procedure', 'event', 'sql', 'import', 'dump', 'privileges',
         'user', 'processlist', 'variables', 'status'
     ];
+
+    function buildDbListUrl() {
+        var url = new URL(window.location.href);
+        for (var i = 0; i < NAV_PARAMS.length; i++) {
+            url.searchParams.delete(NAV_PARAMS[i]);
+        }
+        return url.pathname + (url.search || '');
+    }
 
     function rebrandHeader() {
         var link = document.querySelector('#menu h1 a');
@@ -50,14 +64,27 @@
     function rewriteBrandLink() {
         var link = document.querySelector('#menu h1 a');
         if (!link) return;
-        var url = new URL(window.location.href);
-        for (var i = 0; i < NAV_PARAMS.length; i++) {
-            url.searchParams.delete(NAV_PARAMS[i]);
-        }
-        link.href = url.pathname + (url.search || '');
+        // href = "#" so DOM inspection never reveals server/username/db.
+        // Navigation happens programmatically in the click handler.
+        link.setAttribute('href', '#');
         link.removeAttribute('target');
         link.removeAttribute('rel');
         link.title = 'Database list';
+        // Use a property flag to make this idempotent across re-runs.
+        if (link.__brandLinkBound) return;
+        link.__brandLinkBound = true;
+        link.addEventListener('click', function (e) {
+            // Allow middle-click / cmd-click / ctrl-click to open in
+            // a new tab — but with the safe DB-list URL, not the
+            // server-leaking one.
+            if (e.metaKey || e.ctrlKey || e.shiftKey || e.button === 1) {
+                window.open(buildDbListUrl(), '_blank');
+                e.preventDefault();
+                return;
+            }
+            e.preventDefault();
+            window.location.href = buildDbListUrl();
+        });
     }
 
     function relocateVersion() {
