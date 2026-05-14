@@ -146,8 +146,22 @@
         ['เซอเวอร์', 'เซิฟเวอร์'],
     ];
 
+    function isLoginPage() {
+        // Adminer's login form always has hidden/visible inputs named
+        // `auth[driver]`, `auth[server]`, `auth[username]`, etc. We
+        // detect any of them by iterating — avoiding the fragile
+        // `input[name="auth[driver]"]` selector whose square brackets
+        // some engines mis-handle.
+        var fields = document.querySelectorAll('input, select');
+        for (var i = 0; i < fields.length; i++) {
+            var n = fields[i].getAttribute('name') || '';
+            if (n.indexOf('auth[') === 0) return true;
+        }
+        return false;
+    }
+
     function patchLoginLabels() {
-        if (!document.querySelector('input[name="auth[driver]"]')) return;
+        if (!isLoginPage()) return;
 
         // Mark the body so CSS can target the login layout.
         document.body.setAttribute('data-login', 'true');
@@ -170,16 +184,19 @@
 
         // Also patch submit buttons that carry text via value=.
         var inputs = document.querySelectorAll('input[type="submit"], input[type="button"]');
-        inputs.forEach(function (el) {
+        for (var j = 0; j < inputs.length; j++) {
+            var el = inputs[j];
             var v = el.getAttribute('value');
-            if (!v) return;
-            LOGIN_TEXT_REPLACEMENTS.forEach(function (pair) {
-                if (v.indexOf(pair[0]) !== -1) {
-                    v = v.split(pair[0]).join(pair[1]);
+            if (!v) continue;
+            var nv = v;
+            for (var k = 0; k < LOGIN_TEXT_REPLACEMENTS.length; k++) {
+                var p = LOGIN_TEXT_REPLACEMENTS[k];
+                if (nv.indexOf(p[0]) !== -1) {
+                    nv = nv.split(p[0]).join(p[1]);
                 }
-            });
-            if (v !== el.getAttribute('value')) el.setAttribute('value', v);
-        });
+            }
+            if (nv !== v) el.setAttribute('value', nv);
+        }
     }
 
     /* ===== Init ================================================ */
