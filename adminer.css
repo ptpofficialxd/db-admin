@@ -1609,4 +1609,15 @@ pre,
     #content {
         padding-bottom: 24px !important;
     }
+
+    /* On mobile, Adminer renders #menu wider than --ui-sidebar-width (it
+       expands to roughly the full viewport when the overlay sidebar opens),
+       so the desktop `left: calc(310 - 25 - 100)` math lands the LOGOUT pill
+       INSIDE the defaultdb select. Anchor from the right edge instead — the
+       sidebar's right edge ≈ viewport's right edge on these narrow widths. */
+    body .logout,
+    body p.logout {
+        left: auto !important;
+        right: 25px !important;
+    }
 }
