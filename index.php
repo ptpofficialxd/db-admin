@@ -1,38 +1,32 @@
 <?php
 /**
- * Adminer entry-point wrapper.
+ * Adminer entry-point.
  *
- * Replaces the default index.php in the official Adminer image so we can
- * inject the EN/TH language toggle JS without using the plugin system.
- *
- * Drop this at /var/www/html/index.php alongside adminer.php + adminer.css.
+ * Mirrors the upstream docker-adminer index.php — auto-loads any plugin file
+ * dropped into ./plugins-enabled/ so we can extend Adminer without touching
+ * this file again.
  */
-
-ob_start();
-
-// The official Adminer Docker image ships a versioned file (e.g.
-// adminer-5.4.2.php) symlinked from adminer.php. Including either works.
-require __DIR__ . '/adminer.php';
-
-$html = ob_get_clean();
-
-// Inline every JS file from scripts/ in alphabetical order so adding a new
-// script is just "drop it in scripts/ and rebuild" — no PHP edits needed.
-$scriptsDir = __DIR__ . '/scripts';
-$inline = '';
-if (is_dir($scriptsDir)) {
-    $files = glob($scriptsDir . '/*.js') ?: [];
-    sort($files);
-    foreach ($files as $f) {
-        $inline .= "// ---- " . basename($f) . " ----\n";
-        $inline .= file_get_contents($f) . "\n";
+function adminer_object()
+{
+    $pluginsEnabled = __DIR__ . '/plugins-enabled';
+    if (!is_dir($pluginsEnabled)) {
+        return new Adminer;
     }
+
+    $plugins = [];
+    foreach (glob($pluginsEnabled . '/*.php') ?: [] as $plugin) {
+        $instance = require $plugin;
+        if (is_object($instance)) {
+            $plugins[] = $instance;
+        }
+    }
+
+    if (!$plugins) {
+        return new Adminer;
+    }
+
+    require_once __DIR__ . '/plugins/plugin.php';
+    return new AdminerPlugin($plugins);
 }
 
-if ($inline !== '') {
-    $tag = "<script>\n" . $inline . "</script>\n</body>";
-    // Case-insensitive replacement, only the LAST </body> in the document.
-    $html = preg_replace('#</body>(?!.*</body>)#is', $tag, $html, 1);
-}
-
-echo $html;
+require __DIR__ . '/adminer.php';
