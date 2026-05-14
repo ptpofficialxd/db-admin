@@ -1590,7 +1590,11 @@ pre + table,
 p + table,
 h3 + table,
 .scrollable table {
-    overflow: hidden;
+    /* overflow: clip lets `border-radius` round the corners without
+       creating a scroll-container — required for the sticky <thead>
+       below to actually stick to the window scroll instead of the
+       table's (non-scrolling) own box. */
+    overflow: clip;
     background: #09090B !important;
     border: 1px solid var(--color-border) !important;
     box-shadow: var(--shadow-table);
@@ -1607,9 +1611,18 @@ thead th {
        data area. Works on every table that uses <thead> — checkable,
        scrollable, etc. — because both have an opaque background set
        just above (and a light-mode override later). */
-    position: sticky;
+    position: sticky !important;
     top: 0;
     z-index: 5;
+}
+
+/* Adminer wraps SELECT result tables in `<div class="scrollable">`,
+   whose default `overflow-x: auto` makes the div a scroll container
+   — that container then captures the sticky <thead> and prevents it
+   from sticking to the window. Forcing overflow: visible disables
+   that scroll context so sticky bubbles up to the window scroll. */
+.scrollable {
+    overflow: visible !important;
 }
 
 /* Box-shadow under the sticky header to mark the scroll boundary —
