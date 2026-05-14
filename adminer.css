@@ -1525,13 +1525,6 @@ body #menu h1 img {
 .theme-toggle svg { display: block; }
 
 /* ============================================================
-   Modern hamburger (our own button — Adminer's native toggle is hidden)
-   Only visible on mobile (≤ 800px), styled to float top-left of the viewport.
-   ============================================================ */
-/* ============================================================
-   Close button inside sidebar (mobile only — hidden via @media)
-   ============================================================ */
-/* ============================================================
    Green dot markers in #tables list
    ============================================================ */
 #tables a:not(.select)::before {
@@ -2585,7 +2578,6 @@ html[data-theme="light"] .footer + div input[type="button"]:not([disabled]):hove
     display: inline-block;
     align-self: flex-start;
     margin: 0 !important;
-    padding: 9px 22px !important;
     background: linear-gradient(180deg, #22C55E 0%, #16A34A 100%) !important;
     color: #FFFFFF !important;
     border: 0 !important;

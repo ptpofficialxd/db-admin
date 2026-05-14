@@ -1,0 +1,33 @@
+# Keep the production image small — exclude anything not needed at runtime.
+
+# VCS
+.git
+.gitignore
+.gitattributes
+
+# Editor / IDE
+.vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Docs / dev-only files
+README*
+LICENSE*
+CHANGELOG*
+*.md
+
+# Example / legacy files
+Dockerfile.example
+scripts/adminer-customizations.js
+
+# Local environment + secrets (defense in depth — never bake into image)
+.env
+.env.*
+*.local
+
+# CI / platform configs that aren't read by the container
+render.yaml
+.github
