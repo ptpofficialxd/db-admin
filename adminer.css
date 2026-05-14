@@ -913,12 +913,13 @@ form p label {
     color: var(--color-schema-type-binary);
 }
 
-/* Anchor language picker to top of the *document* (absolute, not fixed) so it
-   scrolls away with the page instead of following the viewport down and
-   blocking table data. Mobile rule below overrides this back to `fixed` so
-   it's always reachable on phones. */
+/* Pinned to top-right of the *viewport* (fixed) so when the user scrolls a
+   wide table horizontally, the picker stays glued to the right edge and
+   remains reachable. Vertical scroll is handled by the scroll-driven
+   animation below — the element fades up off-screen so it doesn't block
+   table data when scrolling down. */
 body #lang {
-    position: absolute !important;
+    position: fixed !important;
     top: 14px !important;
     right: 200px !important;        /* leaves room for "doadmin" + LOGOUT */
     left: auto !important;
@@ -1266,13 +1267,13 @@ body {
                                                   overlaps it on narrow tablet viewports */
 }
 
-/* Anchor LOGOUT (and the username link Adminer renders right above it) to the
-   top of the document, not the viewport — so they scroll away with the page
-   instead of hovering over table data. Mobile rule (further down) overrides
-   this to a fixed bottom bar so it stays reachable on phones. */
+/* Pinned to the top-right of the *viewport* (fixed) so it follows the user
+   when they scroll a wide table horizontally — LOGOUT stays one click away.
+   The scroll-driven animation below hides it on vertical scroll so it
+   doesn't cover table rows underneath. */
 body .logout,
 body p.logout {
-    position: absolute !important;
+    position: fixed !important;
     top: 14px !important;
     right: 40px !important;
     left: auto !important;
@@ -1281,6 +1282,35 @@ body p.logout {
     z-index: 80 !important;
     max-width: calc(100vw - var(--ui-sidebar-width) - 60px);
     text-align: right;
+}
+
+/* Scroll-driven animation: hide the header trio (#lang + username + LOGOUT)
+   when the page is scrolled vertically past ~120px. Horizontal scroll does
+   NOT advance the timeline, so the elements remain visible while panning
+   the table sideways — exactly what we want.
+   Falls back to "always visible" on browsers that don't support
+   scroll-driven animations (Safari < 18, Firefox < 134). */
+@supports (animation-timeline: scroll()) {
+    body #lang,
+    body .logout,
+    body p.logout {
+        animation: header-hide-on-vertical-scroll linear both;
+        animation-timeline: scroll(root block);
+        animation-range: 80px 160px;
+    }
+
+    @keyframes header-hide-on-vertical-scroll {
+        from {
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
+        }
+        to {
+            opacity: 0;
+            transform: translateY(-110%);
+            visibility: hidden;
+        }
+    }
 }
 
 #menu h1,
@@ -1591,6 +1621,17 @@ pre,
     background: rgba(34, 197, 94, 0.18) !important;
     color: #FFFFFF !important;
     border-color: rgba(34, 197, 94, 0.55) !important;
+  }
+
+  /* Disable the desktop scroll-driven hide animation on mobile — the bottom
+     LOGOUT bar and top language picker should always stay visible here. */
+  body #lang,
+  body .logout,
+  body p.logout {
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
   }
 
   /* Move the language picker so it doesn't collide with anything on mobile.
