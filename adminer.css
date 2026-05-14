@@ -1827,10 +1827,7 @@ body.menu-open .sidebar-backdrop {
     }
 
     /* Stop body scroll while the sidebar overlay is up */
-    html.menu-open, body.menu-open,
-    html.menu-open body, body.menu-open {
-        overflow: hidden;
-    }
+    
 }
 
 /* ============================================================
@@ -2392,5 +2389,44 @@ html[data-theme="light"] body .logout input[type="submit"]:hover {
         pointer-events: auto !important;
         box-shadow: 24px 0 60px rgba(0, 0, 0, 0.55) !important;
         overflow-y: auto !important;
+    }
+}
+
+
+/* ============================================================
+   Mobile sidebar — clean v3
+   #menu always exists in DOM (display:flex) but starts offscreen.
+   Only `transform` changes when `html.menu-open` toggles. CSS does
+   ALL the work; JS only flips the class.
+   ============================================================ */
+@media all and (max-width: 800px) {
+    #menu {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: auto !important;
+        bottom: 0 !important;
+        width: var(--ui-sidebar-width, 310px) !important;
+        max-width: 88vw !important;
+        height: 100vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        overflow-y: auto !important;
+        transform: translateX(-105%);
+        transition: transform 0.32s cubic-bezier(0.4, 0, 0.2, 1),
+                    box-shadow 0.32s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 9999;
+        box-shadow: none;
+    }
+    html.menu-open #menu {
+        transform: translateX(0) !important;
+        box-shadow: 24px 0 60px rgba(0, 0, 0, 0.45);
+    }
+    html.menu-open .sidebar-backdrop {
+        opacity: 1;
+        pointer-events: auto;
     }
 }

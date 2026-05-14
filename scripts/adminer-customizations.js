@@ -99,19 +99,49 @@
         document.title = document.title.replace(/ - Adminer\b/i, ' - ' + BRAND_FULL);
     }
 
-    /* ===== 4. Brand-link → DB list ============================= */
+    /* ===== 4. Brand-link → DB list =============================
+       Security: never bake the connection string (server/username) into
+       the rendered `href` attribute. A static `href="#"` keeps the DOM
+       clean against `inspect element`; the actual URL is computed inside
+       a click handler from window.location (which is unavoidable but
+       not duplicated into HTML markup). */
+    var URL_KEYS_TO_STRIP = [
+        'db', 'ns', 'table', 'select', 'edit', 'where', 'schema', 'create',
+        'view', 'foreign', 'trigger', 'sequence', 'type', 'procedure', 'event',
+        'sql', 'import', 'dump', 'privileges', 'user', 'processlist',
+        'variables', 'status'
+    ];
+
+    function buildDbListUrl() {
+        var url = new URL(window.location.href);
+        URL_KEYS_TO_STRIP.forEach(function (p) { url.searchParams.delete(p); });
+        return url.toString();
+    }
+
     function rewriteBrandLink() {
         var link = document.querySelector('#menu h1 a');
         if (!link) return;
-        var url = new URL(window.location.href);
-        ['db', 'ns', 'table', 'select', 'edit', 'where', 'schema', 'create',
-         'view', 'foreign', 'trigger', 'sequence', 'type', 'procedure', 'event',
-         'sql', 'import', 'dump', 'privileges', 'user', 'processlist',
-         'variables', 'status'].forEach(function (p) { url.searchParams.delete(p); });
-        link.href = url.pathname + (url.search || '');
+
+        // Strip credentials/connection params from the rendered attribute.
+        link.setAttribute('href', '#');
+        link.setAttribute('aria-label', 'Database list');
+        link.title = 'Database list';
         link.removeAttribute('target');
         link.removeAttribute('rel');
-        link.title = 'Database list';
+
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            window.location.assign(buildDbListUrl());
+        });
+
+        // Support keyboard activation too (Enter on focused <a href="#">
+        // doesn't navigate without an href value).
+        link.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                window.location.assign(buildDbListUrl());
+            }
+        });
     }
 
     /* ===== 5. Theme toggle ===================================== */
@@ -141,92 +171,14 @@
     var HAMBURGER_SVG = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>';
     var CLOSE_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M6 18L18 6"/></svg>';
 
-    var OPEN_STYLE = [
-        'display: flex !important',
-        'flex-direction: column !important',
-        'visibility: visible !important',
-        'opacity: 1 !important',
-        'position: fixed !important',
-        'left: 0 !important',
-        'right: auto !important',
-        'top: 0 !important',
-        'bottom: 0 !important',
-        'transform: translateX(0) !important',
-        'width: var(--ui-sidebar-width, 310px) !important',
-        'max-width: 92vw !important',
-        'height: 100vh !important',
-        'z-index: 2147483600 !important',
-        'pointer-events: auto !important',
-        'overflow-y: auto !important'
-    ].join(';');
-
-    var CLOSE_STYLE = [
-        'transform: translateX(-105%) !important',
-        'pointer-events: none !important'
-    ].join(';');
-
-    /* Adminer builds use different class names to indicate "menu is open" —
-       we set every plausible one on both <html> and <body> so any of
-       Adminer's own selectors that depend on a class will also kick in. */
-    var OPEN_CLASSES = ['menu-open', 'open', 'openmenu', 'menutoggle', 'show-menu'];
-
-    /** @type {MutationObserver | null} */
-    var openObserver = null;
-
-    /** @param {HTMLElement} menu */
-    function applyOpenStyle(menu) {
-        if (!menu) return;
-        // Write atomically — overwrites whatever Adminer may have set.
-        menu.style.cssText = OPEN_STYLE;
+    function forceOpen() {
+        document.documentElement.classList.add('menu-open');
     }
-
-    /** @param {HTMLElement} menu */
-    function forceOpen(menu) {
-        OPEN_CLASSES.forEach(function (c) {
-            document.documentElement.classList.add(c);
-            document.body.classList.add(c);
-        });
-        if (!menu) return;
-        applyOpenStyle(menu);
-
-        // If anything tries to mutate #menu while we want it open, re-apply.
-        if (openObserver) openObserver.disconnect();
-        openObserver = new MutationObserver(function () {
-            if (document.documentElement.classList.contains('menu-open')) {
-                // Only re-apply if our style was wiped (cheap check on display)
-                if (menu.style.display !== 'flex' || menu.style.transform.indexOf('-') !== -1) {
-                    applyOpenStyle(menu);
-                }
-            }
-        });
-        openObserver.observe(menu, { attributes: true, attributeFilter: ['style', 'class'] });
+    function forceClose() {
+        document.documentElement.classList.remove('menu-open');
     }
-
-    /** @param {HTMLElement} menu */
-    function forceClose(menu) {
-        OPEN_CLASSES.forEach(function (c) {
-            document.documentElement.classList.remove(c);
-            document.body.classList.remove(c);
-        });
-        if (openObserver) { openObserver.disconnect(); openObserver = null; }
-        if (!menu) return;
-        // Slide out then clear inline styles after the transition so desktop
-        // breakpoint rules can take back over cleanly.
-        menu.style.cssText = CLOSE_STYLE;
-        setTimeout(function () {
-            if (!document.documentElement.classList.contains('menu-open')) {
-                menu.style.cssText = '';
-            }
-        }, 360);
-    }
-
-    /** @param {HTMLElement} menu */
-    function toggleSidebar(menu) {
-        if (document.documentElement.classList.contains('menu-open')) {
-            forceClose(menu);
-        } else {
-            forceOpen(menu);
-        }
+    function toggleSidebar() {
+        document.documentElement.classList.toggle('menu-open');
     }
 
     function setupSidebarUI(menu) {
@@ -255,7 +207,7 @@
             trigger.addEventListener('click', function (e) {
                 e.preventDefault();
                 var fresh = document.getElementById('menu') || menu;
-                toggleSidebar(fresh);
+                toggleSidebar();
             });
             document.body.appendChild(trigger);
         }
@@ -268,7 +220,7 @@
             close.setAttribute('aria-label', 'Close sidebar');
             close.innerHTML = CLOSE_SVG;
             close.addEventListener('click', function () {
-                forceClose(menu);
+                forceClose();
             });
             menu.appendChild(close);
         }
@@ -278,7 +230,7 @@
             var bd = document.createElement('div');
             bd.className = 'sidebar-backdrop';
             bd.addEventListener('click', function () {
-                forceClose(menu);
+                forceClose();
             });
             document.body.appendChild(bd);
         }
@@ -290,12 +242,12 @@
             if (!a) return;
             if (a.classList.contains('lang-btn')) return;
             if (a.classList.contains('theme-toggle')) return;
-            forceClose(menu);
+            forceClose();
         });
 
         // 6) ESC closes
         document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') forceClose(menu);
+            if (e.key === 'Escape') forceClose();
         });
 
         // 7) On desktop, the inline styles we may have set should NOT linger.
