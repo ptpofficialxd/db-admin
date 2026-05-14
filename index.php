@@ -12,6 +12,51 @@
  * Adding a new client-side tweak = drop a numbered .js file into
  * `scripts/` (e.g. `60-foo.js`) and rebuild. No PHP edits needed.
  */
+
+// ============================================================
+// Session lifetime — 30 minutes, sliding.
+//
+// Must be configured BEFORE Adminer calls session_start() in
+// adminer.php. With these settings:
+//   • If a valid session cookie is present, Adminer skips the login
+//     screen and routes directly to the requested page — so visiting
+//     `?server=…&username=…` while still authenticated lands on the
+//     DB list, not the login form.
+//   • The cookie expiry is refreshed on every request, so 30 minutes
+//     counts from last activity (not from login time).
+//   • Once 30 idle minutes pass, the browser drops the cookie and
+//     Adminer falls back to the login screen.
+// ============================================================
+const SESSION_LIFETIME = 30 * 60;
+
+$isHttps = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+
+ini_set('session.gc_maxlifetime',   (string) SESSION_LIFETIME);
+ini_set('session.cookie_lifetime',  (string) SESSION_LIFETIME);
+ini_set('session.cookie_httponly',  '1');
+ini_set('session.cookie_secure',    $isHttps ? '1' : '0');
+ini_set('session.cookie_samesite',  'Lax');
+ini_set('session.use_only_cookies', '1');
+ini_set('session.use_strict_mode',  '1');
+// Predictable GC — 1% of requests trigger old-session cleanup.
+ini_set('session.gc_probability',   '1');
+ini_set('session.gc_divisor',       '100');
+
+// Sliding-window refresh: if the client already has Adminer's session
+// cookie, push its expiry forward to NOW + 30 min before any output
+// is generated. Subsequent setcookie() calls from Adminer with the
+// same name will simply override this with whatever is most recent
+// at the end of the request.
+if (isset($_COOKIE['adminer_sid'])) {
+    setcookie('adminer_sid', $_COOKIE['adminer_sid'], [
+        'expires'  => time() + SESSION_LIFETIME,
+        'path'     => '/',
+        'secure'   => $isHttps,
+        'httponly' => true,
+        'samesite' => 'Lax',
+    ]);
+}
+
 function adminer_object()
 {
     return new class extends \Adminer\Adminer {
