@@ -167,106 +167,20 @@
         return btn;
     }
 
-    /* ===== 6. Mobile sidebar UX ================================ */
-    var HAMBURGER_SVG = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>';
-    var CLOSE_SVG = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M6 18L18 6"/></svg>';
-
-    function forceOpen() {
-        document.documentElement.classList.add('menu-open');
-    }
-    function forceClose() {
-        document.documentElement.classList.remove('menu-open');
-    }
-    function toggleSidebar() {
-        document.documentElement.classList.toggle('menu-open');
-    }
-
-    function setupSidebarUI(menu) {
-        // 1) Hide every variant of Adminer's native mobile trigger.
-        ['menu-toggle', 'menutoggle', 'menuopen'].forEach(function (id) {
-            var n = document.getElementById(id);
-            if (n) {
-                n.style.setProperty('display', 'none', 'important');
-                n.setAttribute('aria-hidden', 'true');
-            }
-        });
-        Array.prototype.forEach.call(
-            document.querySelectorAll(
-                '.menu-toggle, .menutoggle, #menuopen button.icon.icon-move'
-            ),
-            function (n) { n.style.setProperty('display', 'none', 'important'); }
-        );
-
-        // 2) Our own hamburger
-        if (!document.querySelector('.custom-menu-trigger')) {
-            var trigger = document.createElement('button');
-            trigger.type = 'button';
-            trigger.className = 'custom-menu-trigger';
-            trigger.setAttribute('aria-label', 'Open sidebar');
-            trigger.innerHTML = HAMBURGER_SVG;
-            trigger.addEventListener('click', function (e) {
-                e.preventDefault();
-                var fresh = document.getElementById('menu') || menu;
-                toggleSidebar();
-            });
-            document.body.appendChild(trigger);
-        }
-
-        // 3) Close × inside sidebar
-        if (!menu.querySelector('.sidebar-close')) {
-            var close = document.createElement('button');
-            close.type = 'button';
-            close.className = 'sidebar-close';
-            close.setAttribute('aria-label', 'Close sidebar');
-            close.innerHTML = CLOSE_SVG;
-            close.addEventListener('click', function () {
-                forceClose();
-            });
-            menu.appendChild(close);
-        }
-
-        // 4) Backdrop
-        if (!document.querySelector('.sidebar-backdrop')) {
-            var bd = document.createElement('div');
-            bd.className = 'sidebar-backdrop';
-            bd.addEventListener('click', function () {
-                forceClose();
-            });
-            document.body.appendChild(bd);
-        }
-
-        // 5) Auto-close after tapping a nav link
-        menu.addEventListener('click', function (e) {
-            var t = e.target;
-            var a = t && t.closest && t.closest('a');
-            if (!a) return;
-            if (a.classList.contains('lang-btn')) return;
-            if (a.classList.contains('theme-toggle')) return;
-            forceClose();
-        });
-
-        // 6) ESC closes
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') forceClose();
-        });
-
-        // 7) On desktop, the inline styles we may have set should NOT linger.
-        //    Listen to viewport changes — if we cross the mobile breakpoint
-        //    back to desktop, wipe the inline overrides so default CSS rules.
-        var mq = window.matchMedia('(min-width: 801px)');
-        function syncDesktop() {
-            if (mq.matches) {
-                ['display','flex-direction','visibility','opacity','position',
-                 'left','right','top','bottom','transform','width','max-width',
-                 'height','z-index','pointer-events','overflow-y']
-                    .forEach(function (k) { menu.style.removeProperty(k); });
-                document.documentElement.classList.remove('menu-open');
-                document.body.classList.remove('menu-open');
-            }
-        }
-        mq.addEventListener ? mq.addEventListener('change', syncDesktop)
-                            : mq.addListener(syncDesktop);
-        syncDesktop();
+    /* ===== 6. Native mobile menu trigger — restyle, don't replace =====
+       Adminer's own JS opens the sidebar via the #menuopen button. We just
+       give that button a modern SVG-icon look. No custom hamburger, no
+       slide animation, no backdrop — Adminer handles all of that. */
+    function modernizeNativeMenuToggle() {
+        var menuopen = document.getElementById('menuopen');
+        if (!menuopen) return;
+        // The actual clickable is the inner <button>. Style it, replace its
+        // text content with an SVG, but DON'T attach our own click handler —
+        // Adminer's submit-form behavior is what opens the sidebar.
+        var btn = menuopen.querySelector('button') || menuopen;
+        btn.classList.add('modern-menu-trigger');
+        btn.setAttribute('aria-label', 'Open sidebar');
+        btn.innerHTML = HAMBURGER_SVG;
     }
 
     /* ===== Init ================================================ */
@@ -279,14 +193,14 @@
         header.appendChild(langToggle);
         (menu || document.body).appendChild(header);
 
-        // Theme toggle is floating bottom-right — attach to <body>, not the sidebar
+        // Theme toggle floats bottom-right of the viewport
         document.body.appendChild(buildThemeToggle());
 
         if (menu) {
             relocateLogout(menu);
-            setupSidebarUI(menu);
         }
 
+        modernizeNativeMenuToggle();
         rebrandHeader();
         rebrandTitle();
         rewriteBrandLink();
