@@ -1668,87 +1668,119 @@ pre,
 
 /*
 ===============================================
-=         Premium Custom Branding 2026        =
+=      Safe Premium Branding Fix 2026         =
+=      ptpofficialxd- white + db green        =
 ===============================================
 */
 
-/* Hide original Adminer text */
-#menu h1 a {
-  font-size: 0 !important;
+/*
+  Fix note:
+  ใช้ pseudo element ตัวเดียว + gradient text
+  เพื่อกันปัญหา db หลุดไปซ้อนกับหน้า Login/Content
+*/
+
+/* Keep Adminer logo background, but replace only the text */
+#menu h1 {
   position: relative !important;
-  display: inline-flex !important;
+  min-height: 82px !important;
+  padding: 18px 0 14px 92px !important;
+  margin: 0 0 22px 0 !important;
+  display: flex !important;
   align-items: center !important;
-  height: 56px !important;
-  min-width: 280px !important;
+  overflow: visible !important;
+
+  background-size: 74px auto !important;
+  background-repeat: no-repeat !important;
+  background-position: left center !important;
 }
 
-/* Hide original version number */
+/* Hide original "adminer" text safely */
+#menu h1 a {
+  font-size: 0 !important;
+  line-height: 1 !important;
+  color: transparent !important;
+  text-decoration: none !important;
+  display: inline-block !important;
+  position: relative !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  height: 0 !important;
+  overflow: visible !important;
+}
+
+/* Hide original version */
 #menu h1 .version {
   display: none !important;
 }
 
-/* White part: ptpofficialxd- */
+/* New brand text: ptpofficialxd-db */
 #menu h1 a::after {
-  content: "ptpofficialxd-";
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  white-space: nowrap;
+  content: "ptpofficialxd-db";
+  position: absolute !important;
+  left: 0 !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
 
-  font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
-  font-size: 30px;
-  font-weight: 760;
-  letter-spacing: -1.25px;
+  display: block !important;
+  width: max-content !important;
+  white-space: nowrap !important;
 
-  color: #F4F4F5;
-  text-shadow:
-    0 0 14px rgba(255,255,255,0.075),
-    0 0 28px rgba(255,255,255,0.035);
+  font-family: Inter, "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif !important;
+  font-size: 27px !important;
+  font-weight: 820 !important;
+  line-height: 1 !important;
+  letter-spacing: -1.15px !important;
+
+  /* white for ptpofficialxd- / green for db */
+  color: transparent !important;
+  background: linear-gradient(
+    90deg,
+    #F4F4F5 0%,
+    #F4F4F5 85%,
+    #22C55E 85%,
+    #22C55E 100%
+  ) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+
+  filter:
+    drop-shadow(0 0 10px rgba(255,255,255,0.05))
+    drop-shadow(0 0 16px rgba(34,197,94,0.12));
 }
 
-/* Green part: db */
-#menu h1 a::before {
-  content: "db";
-  position: absolute;
-  left: 244px;
-  top: 50%;
-  transform: translateY(-50%);
-  white-space: nowrap;
-
-  font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
-  font-size: 30px;
-  font-weight: 850;
-  letter-spacing: -1.25px;
-
-  color: #22C55E;
-  text-shadow:
-    0 0 14px rgba(34,197,94,0.42),
-    0 0 34px rgba(34,197,94,0.22);
-}
-
-/* Premium hover glow */
-#menu h1:hover a::before {
-  color: #4ADE80;
-  text-shadow:
-    0 0 18px rgba(74,222,128,0.55),
-    0 0 42px rgba(74,222,128,0.28);
-}
-
+/* Subtle hover glow */
 #menu h1:hover a::after {
-  color: #FFFFFF;
+  background: linear-gradient(
+    90deg,
+    #FFFFFF 0%,
+    #FFFFFF 85%,
+    #4ADE80 85%,
+    #4ADE80 100%
+  ) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  filter:
+    drop-shadow(0 0 12px rgba(255,255,255,0.07))
+    drop-shadow(0 0 22px rgba(74,222,128,0.20));
 }
 
-/* Keep language selector clear from branding */
+/* Language selector stays below branding, no overlap */
 #lang {
-  top: 136px !important;
+  top: 150px !important;
+}
+
+/* Desktop sidebar spacing after bigger logo block */
+#menu #dbs {
+  margin-top: 2px !important;
 }
 
 /* Mobile branding */
 @media all and (max-width: 800px) {
-  #menu h1 a {
-    height: 50px !important;
-    min-width: 230px !important;
+  #menu h1 {
+    min-height: 78px !important;
+    padding: 16px 0 12px 88px !important;
+    margin-bottom: 20px !important;
+    background-size: 70px auto !important;
   }
 
   #menu h1 a::after {
@@ -1756,36 +1788,28 @@ pre,
     letter-spacing: -1px !important;
   }
 
-  #menu h1 a::before {
-    font-size: 24px !important;
-    letter-spacing: -1px !important;
-    left: 196px !important;
-  }
-
   #lang {
-    top: 106px !important;
+    top: 134px !important;
+    right: 22px !important;
   }
 }
 
 /* Small phones */
 @media all and (max-width: 420px) {
-  #menu h1 a {
-    min-width: 205px !important;
+  #menu h1 {
+    min-height: 74px !important;
+    padding-left: 82px !important;
+    background-size: 66px auto !important;
   }
 
   #menu h1 a::after {
     font-size: 21px !important;
-    letter-spacing: -0.8px !important;
-  }
-
-  #menu h1 a::before {
-    font-size: 21px !important;
-    letter-spacing: -0.8px !important;
-    left: 172px !important;
+    letter-spacing: -0.85px !important;
   }
 
   #lang {
-    top: 108px !important;
+    top: 130px !important;
+    right: 18px !important;
   }
 }
 
