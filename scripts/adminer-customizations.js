@@ -167,6 +167,8 @@
         return btn;
     }
 
+    var HAMBURGER_SVG = '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>';
+
     /* ===== 6. Native mobile menu trigger — restyle, don't replace =====
        Adminer's own JS opens the sidebar via the #menuopen button. We just
        give that button a modern SVG-icon look. No custom hamburger, no
