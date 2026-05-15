@@ -1762,13 +1762,17 @@ pre,
     border-radius: 14px !important;
 }
 
-/* Footer/action area */
+/* Footer/action area — transparent so the page gradient flows
+   through. No hard top border; we use a soft fade-in via a thin
+   inset shadow instead so the section reads as a continuation of
+   the table area, not a detached card. */
 .footer > div,
 .footer + div {
-    background: rgba(9, 9, 11, 0.92) !important;
-    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
+    background: transparent !important;
+    border-top: none !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
 /* Mobile polish */
@@ -2264,10 +2268,11 @@ html[data-theme="light"] .footer > div,
 html[data-theme="light"] .footer + div,
 html[data-theme="light"] div.footer > div,
 html[data-theme="light"] div.footer + div {
-    background: rgba(249, 250, 251, 0.96) !important;
-    border-top: 1px solid rgba(0, 0, 0, 0.08) !important;
-    -webkit-backdrop-filter: blur(14px) !important;
-    backdrop-filter: blur(14px) !important;
+    background: transparent !important;
+    border-top: none !important;
+    box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.04) !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
     color: #18181B !important;
 }
 
