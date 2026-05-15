@@ -1609,55 +1609,30 @@ h3 + table,
     box-shadow: var(--shadow-table);
 }
 
-/* Make the row itself sticky — not each <td>/<th>. Per-cell sticky
-   has a known Chrome quirk where positioned descendants from tbody
-   (the row checkboxes have `position: relative`) can paint above
-   the sticky cells. Promoting the whole <tr> to sticky moves it
-   into its own positioned layer and the cell backgrounds reliably
-   cover everything below. */
-thead,
-thead tr {
-    background: #0F1115 !important;
-}
-thead tr {
-    position: sticky !important;
-    top: 0;
-    z-index: 50 !important;
-    isolation: isolate;
-}
 thead td,
-thead th,
-thead tr > :first-child {
+thead th {
     background: #0F1115 !important;
-    background-clip: padding-box !important;
     color: var(--color-table-head-text) !important;
-    /* Thicker, brand-tinted divider so the next row never appears to
-       "merge" into the sticky header. */
-    border-bottom: 2px solid rgba(34, 197, 94, 0.28) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
     font-weight: 600;
     text-transform: lowercase;
-    /* Keep sticky on the cells too as a fallback for browsers that
-       don't honor sticky on <tr> — they'll fall back to the original
-       per-cell sticky behavior. */
+    /* Keep the column headers visible while the user scrolls the
+       data area. Works on every table that uses <thead> — checkable,
+       scrollable, etc. — because both have an opaque background set
+       just above (and a light-mode override later). */
     position: sticky !important;
     top: 0;
-    z-index: 50 !important;
-    box-shadow: 0 6px 12px -4px rgba(0, 0, 0, 0.55);
+    z-index: 5;
 }
-/* Force every input inside the sticky thead above any tbody-positioned
-   sibling. Tbody checkboxes have `position: relative; z-index: auto`
-   which in some browsers leaks above per-cell sticky. */
-thead input,
-thead label,
-thead a {
-    position: relative;
-    z-index: 1;
-}
-/* Conversely, demote tbody positioned inputs so they can NEVER paint
-   above the sticky header. */
-tbody input[type="checkbox"],
-tbody input[type="radio"] {
-    z-index: 0 !important;
+
+/* Checkboxes globally have `background: transparent` so unchecked ones
+   are a hollow ○ (only border paints). For the check-all in the sticky
+   header that meant a tbody row's checkbox sitting underneath was
+   visible *through* the ○. Fill the header's unchecked checkbox with
+   the same color as its cell so the circle is opaque but still looks
+   identical to a normal ○. */
+thead input[type="checkbox"]:not(:checked) {
+    background-color: #0F1115 !important;
 }
 
 /* Adminer wraps SELECT result tables in `<div class="scrollable">`,
@@ -2395,29 +2370,17 @@ html[data-theme="light"] .scrollable table {
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.04) !important;
 }
 
-html[data-theme="light"] thead,
-html[data-theme="light"] thead tr {
-    background: #FFFFFF !important;
-}
-html[data-theme="light"] thead tr {
-    position: sticky !important;
-    top: 0;
-    z-index: 50 !important;
-    isolation: isolate;
-}
 html[data-theme="light"] thead td,
-html[data-theme="light"] thead th,
-html[data-theme="light"] thead tr > td:first-child,
-html[data-theme="light"] thead tr > th:first-child,
-html[data-theme="light"] thead tr > :first-child {
-    background: #FFFFFF !important;
-    background-clip: padding-box !important;
+html[data-theme="light"] thead th {
+    background: #FFFFFF !important;   /* pure white — #F9FAFB blended
+                                         too softly with the gradient */
     color: #16A34A !important;
-    border-bottom: 2px solid rgba(22, 163, 74, 0.32) !important;
-    position: sticky !important;
-    top: 0;
-    z-index: 50 !important;
-    box-shadow: 0 6px 12px -4px rgba(0, 0, 0, 0.12);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+}
+/* Solid fill behind the check-all ○ so tbody checkboxes don't show
+   through the transparent interior of the header's checkbox. */
+html[data-theme="light"] thead input[type="checkbox"]:not(:checked) {
+    background-color: #FFFFFF !important;
 }
 
 /* Alter-table column-header row — Adminer renders these as <th>
