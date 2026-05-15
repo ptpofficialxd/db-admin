@@ -1625,14 +1625,19 @@ thead th {
     z-index: 5;
 }
 
-/* Checkboxes globally have `background: transparent` so unchecked ones
-   are a hollow ○ (only border paints). For the check-all in the sticky
-   header that meant a tbody row's checkbox sitting underneath was
-   visible *through* the ○. Fill the header's unchecked checkbox with
-   the same color as its cell so the circle is opaque but still looks
-   identical to a normal ○. */
+/* Checkboxes globally have `background: transparent` *and* a translucent
+   border (`rgba(255,255,255,0.10)`), so unchecked ones are a hollow ○
+   you can see straight through — both interior AND border. For the
+   check-all in the sticky header that meant a tbody row's checkbox
+   sitting underneath was visible *through* the ○.
+   Fill the interior AND give the border an opaque color matched to a
+   translucent-looking white so the visual is identical to a normal ○
+   but the circle is now physically opaque. */
 thead input[type="checkbox"]:not(:checked) {
     background-color: #0F1115 !important;
+    border-color: #2a2d33 !important;   /* opaque equivalent of the
+                                           translucent input border on
+                                           top of the dark cell bg */
 }
 
 /* Adminer wraps SELECT result tables in `<div class="scrollable">`,
@@ -2377,10 +2382,13 @@ html[data-theme="light"] thead th {
     color: #16A34A !important;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
 }
-/* Solid fill behind the check-all ○ so tbody checkboxes don't show
-   through the transparent interior of the header's checkbox. */
+/* Solid fill AND opaque border so tbody checkboxes don't show through
+   the (default translucent) interior or border of the header checkbox. */
 html[data-theme="light"] thead input[type="checkbox"]:not(:checked) {
     background-color: #FFFFFF !important;
+    border-color: #B7B7BB !important;   /* opaque equivalent of the
+                                           translucent black border on
+                                           top of the white cell bg */
 }
 
 /* Alter-table column-header row — Adminer renders these as <th>
