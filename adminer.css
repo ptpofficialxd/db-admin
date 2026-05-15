@@ -2367,9 +2367,17 @@ html[data-theme="light"] thead tr {
                                            the scrolled row underneath */
 }
 html[data-theme="light"] thead td,
-html[data-theme="light"] thead th {
+html[data-theme="light"] thead th,
+html[data-theme="light"] thead tr > td:first-child,
+html[data-theme="light"] thead tr > th:first-child,
+html[data-theme="light"] thead tr > :first-child {
     background: #FFFFFF !important;     /* pure white — #F9FAFB blended
-                                           too softly with the gradient */
+                                           too softly with the gradient.
+                                           Explicit :first-child selectors
+                                           catch the row-select column
+                                           (often an empty <td>) which
+                                           sometimes wasn't getting the
+                                           cell background. */
     color: #16A34A !important;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
     /* Bump above any tbody stacking context — sticky already has z:5
