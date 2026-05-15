@@ -1617,31 +1617,12 @@ thead th {
     font-weight: 600;
     text-transform: lowercase;
     /* Keep the column headers visible while the user scrolls the
-       data area. z-index needs to be high enough to win against
-       tbody's positioned descendants (the row checkboxes have
-       `position: relative` from the base input rule, which puts them
-       in the same painting group as the sticky cells at z:auto/0).
-       Isolation: isolate forces a fresh stacking context so the cell
-       and everything inside it composites as one opaque layer. */
+       data area. Works on every table that uses <thead> — checkable,
+       scrollable, etc. — because both have an opaque background set
+       just above (and a light-mode override later). */
     position: sticky !important;
     top: 0;
-    z-index: 50;
-    isolation: isolate;
-}
-
-/* Checkboxes globally have `background: transparent` *and* a translucent
-   border (`rgba(255,255,255,0.10)`), so unchecked ones are a hollow ○
-   you can see straight through — both interior AND border. For the
-   check-all in the sticky header that meant a tbody row's checkbox
-   sitting underneath was visible *through* the ○.
-   Fill the interior AND give the border an opaque color matched to a
-   translucent-looking white so the visual is identical to a normal ○
-   but the circle is now physically opaque. */
-thead input[type="checkbox"]:not(:checked) {
-    background-color: #0F1115 !important;
-    border-color: #2a2d33 !important;   /* opaque equivalent of the
-                                           translucent input border on
-                                           top of the dark cell bg */
+    z-index: 5;
 }
 
 /* Adminer wraps SELECT result tables in `<div class="scrollable">`,
@@ -2379,24 +2360,34 @@ html[data-theme="light"] .scrollable table {
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.04) !important;
 }
 
+html[data-theme="light"] thead,
+html[data-theme="light"] thead tr {
+    background: #FFFFFF !important;     /* paint behind cells too, so any
+                                           gap/border-spacing doesn't leak
+                                           the scrolled row underneath */
+}
 html[data-theme="light"] thead td,
-html[data-theme="light"] thead th {
-    background: #FFFFFF !important;   /* pure white — #F9FAFB blended
-                                         too softly with the gradient */
+html[data-theme="light"] thead th,
+html[data-theme="light"] thead tr > td:first-child,
+html[data-theme="light"] thead tr > th:first-child,
+html[data-theme="light"] thead tr > :first-child {
+    background: #FFFFFF !important;     /* pure white — #F9FAFB blended
+                                           too softly with the gradient.
+                                           Explicit :first-child selectors
+                                           catch the row-select column
+                                           (often an empty <td>) which
+                                           sometimes wasn't getting the
+                                           cell background. */
     color: #16A34A !important;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
-    /* See dark-mode block — same reason: tbody's positioned <input>
-       descendants need to be definitively below the sticky header. */
-    z-index: 50;
-    isolation: isolate;
-}
-/* Solid fill AND opaque border so tbody checkboxes don't show through
-   the (default translucent) interior or border of the header checkbox. */
-html[data-theme="light"] thead input[type="checkbox"]:not(:checked) {
-    background-color: #FFFFFF !important;
-    border-color: #B7B7BB !important;   /* opaque equivalent of the
-                                           translucent black border on
-                                           top of the white cell bg */
+    /* Bump above any tbody stacking context — sticky already has z:5
+       in the dark-mode block, but in light mode the very faint zebra
+       backgrounds made the bleed-through visible. */
+    position: sticky !important;
+    top: 0;
+    z-index: 20 !important;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06),
+                0 4px 8px rgba(0, 0, 0, 0.04);
 }
 
 /* Alter-table column-header row — Adminer renders these as <th>
