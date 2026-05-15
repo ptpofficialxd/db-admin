@@ -1617,12 +1617,16 @@ thead th {
     font-weight: 600;
     text-transform: lowercase;
     /* Keep the column headers visible while the user scrolls the
-       data area. Works on every table that uses <thead> — checkable,
-       scrollable, etc. — because both have an opaque background set
-       just above (and a light-mode override later). */
+       data area. z-index needs to be high enough to win against
+       tbody's positioned descendants (the row checkboxes have
+       `position: relative` from the base input rule, which puts them
+       in the same painting group as the sticky cells at z:auto/0).
+       Isolation: isolate forces a fresh stacking context so the cell
+       and everything inside it composites as one opaque layer. */
     position: sticky !important;
     top: 0;
-    z-index: 5;
+    z-index: 50;
+    isolation: isolate;
 }
 
 /* Checkboxes globally have `background: transparent` *and* a translucent
@@ -2381,6 +2385,10 @@ html[data-theme="light"] thead th {
                                          too softly with the gradient */
     color: #16A34A !important;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+    /* See dark-mode block — same reason: tbody's positioned <input>
+       descendants need to be definitively below the sticky header. */
+    z-index: 50;
+    isolation: isolate;
 }
 /* Solid fill AND opaque border so tbody checkboxes don't show through
    the (default translucent) interior or border of the header checkbox. */
