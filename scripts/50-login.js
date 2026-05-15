@@ -11,8 +11,9 @@
     // top-to-bottom on every text node, so put broader matches last.
     var TEXT_REPLACEMENTS = [
         ['Permanent login', 'Remember me'],
+        ['Server', 'Server / Host'],
         ['จดจำการเข้าสู่ระบบตลอดไป', 'จดจำการเข้าสู่ระบบ'],
-        ['เซอเวอร์', 'เซิฟเวอร์']
+        ['เซอเวอร์', 'เซิฟเวอร์ / โฮสต์']
     ];
 
     function isLoginPage() {

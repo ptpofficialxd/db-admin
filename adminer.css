@@ -1287,6 +1287,9 @@ body {
         radial-gradient(circle at top right, rgba(34, 197, 94, 0.08), transparent 32rem),
         radial-gradient(circle at bottom left, rgba(150, 84, 255, 0.06), transparent 34rem),
         var(--color-background);
+    background-attachment: fixed;   /* anchor gradient to viewport so it never
+                                       gets clipped when content scrolls past
+                                       body's 100% height */
     color: var(--color-text);
     letter-spacing: -0.01em;
 }
@@ -1849,6 +1852,7 @@ html[data-theme="light"] body {
         radial-gradient(circle at top right, rgba(34, 197, 94, 0.06), transparent 32rem),
         radial-gradient(circle at bottom left, rgba(150, 84, 255, 0.04), transparent 34rem),
         #F9FAFB !important;
+    background-attachment: fixed !important;  /* keep gradient pinned to viewport */
     color: #18181B !important;
 }
 
